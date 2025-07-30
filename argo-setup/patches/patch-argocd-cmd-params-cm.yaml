@@ -1,0 +1,16 @@
+---
+# /argo-setup/patches/patch-argocd-cmd-params-cm.yaml
+#
+# Applies a command‑line parameter override to the Argo CD API server
+# via the argocd-cmd-params-cm ConfigMap. This patch is consumed by the
+# upstream manifests; StrategicMerge involves we only need to specify keys we change.
+#
+# Effect: Argo CD server runs in HTTP mode behind TLS‑terminating ingress.
+# CLI usage: argocd login <host> --grpc-web
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmd-params-cm
+data:
+  server.insecure: 'true'

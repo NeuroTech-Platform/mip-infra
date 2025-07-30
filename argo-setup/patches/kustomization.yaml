@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argocd-mip-team
+# Base: upstream HA manifest (resolved tag)
+resources:
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.0.11/manifests/ha/install.yaml
+  - patch-argocd-ingress.yaml
+  - patch-argocd-application-controller-clusterrole.yaml
+  - patch-argocd-application-controller-clusterrolebinding.yaml
+patchesStrategicMerge:
+  - patch-argocd-application-controller-resources.yaml
+  - patch-argocd-repo-server-resources.yaml
+  - patch-argocd-server-resources.yaml
+  - patch-argocd-dex-server-resources.yaml
+  - patch-argocd-redis-ha-statefulset.yaml
+  - patch-argocd-cmd-params-cm.yaml
+  - patch-argocd-cm.yaml

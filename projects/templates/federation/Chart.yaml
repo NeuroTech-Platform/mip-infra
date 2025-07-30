@@ -1,0 +1,7 @@
+---
+apiVersion: v2
+name: federation-appproject
+description: Dynamic federation-specific AppProject template
+type: application
+version: 0.1.0
+appVersion: 1.0.0

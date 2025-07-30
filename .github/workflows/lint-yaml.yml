@@ -1,0 +1,59 @@
+---
+name: Lint YAML and Auto-commit Fixes
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  lint-and-fix:
+    name: Lint YAML and Auto-commit Fixes
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Needed to push commits to the PR branch
+    steps:
+      - name: Checkout PR Branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}  # Checkout the PR head branch
+          token: ${{ secrets.GITHUB_TOKEN }}  # Use GITHUB_TOKEN for commit/push
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+      - name: Install yamlfix
+        run: pip install yamlfix
+      - name: Run yamlfix to find and fix issues
+        id: yamlfix
+        run: |
+          # The yamlfix command will automatically find and apply fixes to any YAML files.
+          # It uses the `.yamllint.yml` configuration file for its rules.
+          yamlfix --exclude "./projects/templates/federation/templates/appproject.yaml" .
+
+          # Check if there are any changes to commit.
+          # `git status --porcelain` will be empty if there are no changes.
+          if [[ -n $(git status --porcelain) ]]; then
+            echo "Changes detected, will commit and push."
+            echo "changes_detected=true" >> $GITHUB_ENV
+          else
+            echo "No changes detected."
+            echo "changes_detected=false" >> $GITHUB_ENV
+          fi
+      - name: Commit and Push Fixes
+        if: env.changes_detected == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "style: auto-fix YAML linting issues ✨"
+          git push origin ${{ github.head_ref }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Final Check
+        if: env.changes_detected == 'true'
+        run: |
+          echo "YAML fixes have been committed and pushed to the PR branch."
+          echo "The PR will now reflect these automated changes."
+      - name: No Changes Needed
+        if: env.changes_detected == 'false'
+        run: |-
+          echo "✅ All YAML files are correctly formatted. No changes needed."

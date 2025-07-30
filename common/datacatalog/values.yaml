@@ -1,0 +1,30 @@
+---
+namespace: mip-common-datacatalog
+managed_cluster: true
+datacatalog_images:
+  repository: madgik
+  tag: 1.0.0
+dqt:
+  flaskEnv: development
+  flaskDebug: '1'
+datacatalogDb:
+  storageClassName: ceph-corbo-cephfs
+  image: postgres:15
+  password: test
+  db: datacatalog
+  user: postgres
+  storage: 5Gi
+backend:
+  dbUrl: jdbc:postgresql://datacatalogdb:5432/datacatalog
+  dbUser: postgres
+  dbPassword: test
+  publicHost: datacatalog.mip-tds.chuv.cscs.ch
+  dqtUrl: http://data-quality-tool:8000
+  authentication: 'true'
+  keycloak:
+    authUrl: https://iam.ebrains.eu/auth/
+    realm: MIP
+    sslRequired: none
+persistence:
+  enabled: true
+  accessModes: [ReadWriteOnce]

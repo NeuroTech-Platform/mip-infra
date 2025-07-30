@@ -1,0 +1,53 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-{{ .Values.federationName }}
+  namespace: argocd-mip-team
+  labels:
+    app.kubernetes.io/name: {{ .Values.federationName }}-project
+    app.kubernetes.io/managed-by: argocd
+    federation: {{ .Values.federationName }}
+spec:
+  description: "Federation-specific project for {{ .Values.federationName }}"
+  sourceRepos:
+    {{- range .Values.sourceRepos }}
+    - {{ . | quote }}
+    {{- end }}
+  destinations:
+    - namespace: {{ .Values.federationName | quote }}
+      server: {{ .Values.server | quote }}
+    - namespace: argocd-mip-team  # For the federation Application itself
+      server: {{ .Values.server | quote }}
+  clusterResourceWhitelist: {{ toYaml .Values.resources.cluster | nindent 4 }}
+  namespaceResourceWhitelist: {{ toYaml .Values.resources.namespace | nindent 4 }}
+  {{- if .Values.resources.blacklist }}
+  # Explicitly blacklist sensitive resources to be future proof
+  clusterResourceBlacklist: {{ toYaml .Values.resources.blacklist | nindent 4 }}
+  {{- end }}
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications:
+        - '*'
+  roles:
+    - name: federation-admin
+      description: "Admin access to {{ .Values.federationName }} resources"
+      policies:
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-admin, applications, *, mip-argo-project-{{ .Values.federationName }}/*, allow
+      groups:
+        {{- range .Values.rbac.adminGroups }}
+        - {{ . }}
+        {{- end }}
+        - {{ .Values.federationName }}-admins
+    - name: federation-developer
+      description: "Developer access to {{ .Values.federationName }} resources"
+      policies:
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-developer, applications, sync, mip-argo-project-{{ .Values.federationName }}/*, allow
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-developer, applications, get, mip-argo-project-{{ .Values.federationName }}/*, allow
+      groups:
+        {{- range .Values.rbac.developerGroups }}
+        - {{ . }}
+        {{- end }}
+        - {{ .Values.federationName }}-developers 

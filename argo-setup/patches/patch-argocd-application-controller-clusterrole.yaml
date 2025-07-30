@@ -1,0 +1,60 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argocd-application-controller
+rules:
+  # Rule 1: Read-only access for health and state monitoring
+  # The controller needs to be able to check the status of any resource
+  # to determine if it is healthy and in sync with the desired state in Git.
+  - apiGroups: ['*']
+    resources: ['*']
+    verbs: [get, list, watch]
+
+  # Rule 2: Write access for managed resources
+  - apiGroups: [admissionregistration.k8s.io]
+    resources: [mutatingadmissionwebhooks, validatingadmissionwebhooks]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [argoproj.io]
+    resources: [applications, applicationsets, appprojects]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [apps]
+    resources: [daemonsets, deployments, replicasets, statefulsets]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [batch]
+    resources: [cronjobs, jobs]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [cert-manager.io]
+    resources: [certificates, clusterissuers, issuers]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [extensions]
+    resources: [ingresses]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [monitoring.coreos.com]
+    resources: [prometheusrules, servicemonitors]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [networking.k8s.io]
+    resources: [ingresses, networkpolicies]
+    verbs: [create, delete, patch, update]
+  - apiGroups: [rbac.authorization.k8s.io]
+    resources: [clusterrolebindings, clusterroles, rolebindings, roles]
+    verbs: [create, delete, patch, update]
+  - apiGroups: ['']
+    resources:
+      - configmaps
+      - namespaces
+      - persistentvolumeclaims
+      - secrets
+      - serviceaccounts
+      - services
+    verbs: [create, delete, patch, update]
+
+  # Rule 3: Special case for deleting pods
+  # Argo CD needs permission to delete pods for certain sync strategies (e.g., recreate)
+  # and to allow users to manually terminate pods from the UI.
+  - apiGroups: ['']
+    resources: [pods]
+    verbs: [create, delete, patch, update]  # in the future, only delete but at the moment we still have standalone pods

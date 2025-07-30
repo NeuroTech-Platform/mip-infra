@@ -1,0 +1,25 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: datacatalog
+  namespace: argocd-mip-team  # This is the namespace where Argo CD runs
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: mip-argo-project-common
+  sources:
+    - repoURL: https://github.com/madgik/datacatalog
+      targetRevision: managed_cluster
+      path: kubernetes
+      helm:
+        valueFiles: [values.yaml, $values/common/datacatalog/values.yaml]
+    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mip-common-datacatalog
+  syncPolicy:
+    syncOptions: [CreateNamespace=true]
+    automated:
+      selfHeal: true

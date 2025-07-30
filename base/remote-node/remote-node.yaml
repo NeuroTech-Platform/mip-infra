@@ -1,0 +1,46 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: mip-infrastructure
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    argocd.instance: mip-team
+spec:
+  generators:
+    - matrix:
+        generators:
+          - git:
+              repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+              revision: main
+              directories:
+                # Remote node
+                - path: deployments/hybrid/federations/*/remote-node
+          - list:
+              elements:
+                - cluster: https://kubernetes.default.svc
+                  namespace: argocd-mip-team
+                  clusterName: default
+  goTemplate: true  # for | lower
+  template:
+    metadata:
+      # Create a unique name based on both path and cluster
+      name: '{{ index .path.segments 0 }}-{{ .path.basename | lower }}'
+      labels:
+        app.kubernetes.io/part-of: '{{ .clusterName }}.cluster-{{ index .path.segments
+          0 }}-{{ .path.basename | lower }}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        targetRevision: main
+        path: '{{ .path.path }}'  # ensures we're using the exact path from the Git repository with the original case preserved
+        kustomize:
+          namePrefix: ''
+      destination:
+        server: '{{.cluster}}'
+        namespace: '{{.namespace}}'
+      syncPolicy:
+        syncOptions: [CreateNamespace=true, preserveResourcesOnDeletion=true]
+        automated:
+          selfHeal: true

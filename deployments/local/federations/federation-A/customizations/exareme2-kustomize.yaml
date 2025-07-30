@@ -1,0 +1,22 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: exareme2
+  namespace: argocd-mip-team
+spec:
+  project: mip-argo-project-federation-a
+  destination:
+    namespace: federation-a
+  sources:
+    - repoURL: https://github.com/madgik/exareme2
+      targetRevision: managed_cluster
+      path: kubernetes
+      helm:
+        valueFiles:
+          - values.yaml
+          - $values/deployments/shared-apps/exareme2/values.yaml
+          - $values/deployments/local/federations/federation-A/customizations/exareme2-values.yaml
+    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+      targetRevision: main
+      ref: values

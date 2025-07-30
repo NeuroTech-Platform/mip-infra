@@ -1,0 +1,34 @@
+---
+# /argo-setup/patches/patch-argocd-ingress.yaml
+#
+# Creates an Ingress that terminates TLS (Let's Encrypt via cert-manager),
+# forwards plain HTTP to the argocd-server Service (since server.insecure=true),
+# and forces HTTPS for users.
+#
+# CLI usage: argocd login argocd.example.com --grpc-web
+#
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd-mip-team-mip-team
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTP
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: argocd.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  name: http  # or number: 80; upstream argocd-server Service exposes this
+  tls:
+    - hosts: [argocd.example.com]
+      secretName: argocd-tls

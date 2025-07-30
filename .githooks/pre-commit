@@ -1,0 +1,161 @@
+#!/bin/bash
+
+# Critical files to ALWAYS check for 'revision: main' or 'targetRevision: main'
+# when on a feature branch, regardless of whether they are staged.
+CRITICAL_FILES=("base/mip-infrastructure/mip-infrastructure.yaml")
+
+# Get the current branch name
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# If on main branch, allow commit
+if [[ "$CURRENT_BRANCH" == "main" ]]; then
+  exit 0
+fi
+
+echo "🔎 Checking configuration files for branch '$CURRENT_BRANCH'..."
+
+ERROR_FOUND=0
+# Store detailed error messages for each problematic instance
+# Each element is a multi-line string: "File: ...\n  L...\n  L..."
+PROBLEM_DETAILS=()
+
+# Helper function to check for problematic revision/targetRevision patterns
+check_file_content() {
+  local FILE_PATH="$1"
+  local FILE_CONTENT="$2"
+  local SOURCE_DESC="$3"
+  
+  # Check for 'revision: main' patterns - always consider them issues
+  REVISION_ISSUES=$(echo "$FILE_CONTENT" | grep -nE '^[[:space:]]*revision:[[:space:]]+main[[:space:]]*$')
+  
+  # Check for 'targetRevision: main' patterns - need context check
+  TARGET_REVISION_LINES=$(echo "$FILE_CONTENT" | grep -nE '^[[:space:]]*targetRevision:[[:space:]]+main[[:space:]]*$')
+  
+  TARGET_REVISION_ISSUES=""
+  if [[ -n "$TARGET_REVISION_LINES" ]]; then
+    # For each targetRevision line
+    while IFS= read -r LINE; do
+      if [[ -z "$LINE" ]]; then
+        continue
+      fi
+      
+      # Extract line number
+      LINE_NUM=$(echo "$LINE" | grep -oE "^[0-9]+")
+      
+      # Get context (5 lines before and after) - need to be careful here
+      # For staged files we're working with file content, not a real file
+      START_LINE=$((LINE_NUM - 5))
+      if [[ $START_LINE -lt 1 ]]; then
+        START_LINE=1
+      fi
+      END_LINE=$((LINE_NUM + 5))
+      
+      # Get the context lines
+      CONTEXT=$(echo "$FILE_CONTENT" | sed -n "${START_LINE},${END_LINE}p")
+      
+      # Only flag if associated with our repo
+      if echo "$CONTEXT" | grep -q "repoURL:.*NeuroTech-Platform/mip-infra"; then
+        if [[ -n "$TARGET_REVISION_ISSUES" ]]; then
+          TARGET_REVISION_ISSUES+=$'\n'
+        fi
+        TARGET_REVISION_ISSUES+="$LINE"
+      fi
+    done <<< "$TARGET_REVISION_LINES"
+  fi
+  
+  # Combine all issues
+  ISSUES=""
+  if [[ -n "$REVISION_ISSUES" ]]; then
+    ISSUES="$REVISION_ISSUES"
+  fi
+  
+  if [[ -n "$TARGET_REVISION_ISSUES" ]]; then
+    if [[ -n "$ISSUES" ]]; then
+      ISSUES+=$'\n'
+    fi
+    ISSUES+="$TARGET_REVISION_ISSUES"
+  fi
+  
+  # If we found issues, add to problem details
+  if [[ -n "$ISSUES" ]]; then
+    ERROR_FOUND=1
+    DETAIL="File: $FILE_PATH ($SOURCE_DESC)\n"
+    DETAIL+=$(echo "$ISSUES" | sed 's/^/  L/') # Indent and add L
+    PROBLEM_DETAILS+=("$DETAIL")
+  fi
+}
+
+# 1. Check CRITICAL files that are NOT STAGED (their current disk state matters)
+for FILE_PATH in "${CRITICAL_FILES[@]}"; do
+  if git diff --cached --quiet -- "$FILE_PATH"; then # Check if file is NOT staged
+    if [[ ! -f "$FILE_PATH" ]]; then
+      echo "⚠️  Warning: Critical file '$FILE_PATH' (not staged) not found. Skipping."
+      continue
+    fi
+    
+    # Get file content
+    FILE_CONTENT=$(cat "$FILE_PATH")
+    check_file_content "$FILE_PATH" "$FILE_CONTENT" "checked from disk state as it was not part of this commit"
+  fi
+done
+
+# 2. Check STAGED YAML/YML or kustomization.yaml files (their staged content matters)
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei '(\.(yaml|yml)|kustomization\.yaml)$')
+for FILE_PATH in $STAGED_FILES; do
+  # Get staged content
+  STAGED_CONTENT=$(git show :0:"$FILE_PATH")
+  check_file_content "$FILE_PATH" "$STAGED_CONTENT" "checked from STAGED changes"
+done
+
+if [[ "$ERROR_FOUND" -ne 0 ]]; then
+  echo "---------------------------------------------------------------------------------"
+  echo "🛑 COMMIT BLOCKED on branch '$CURRENT_BRANCH'"
+  echo "   Your commit was blocked because some configurations might cause your branch-specific"
+  echo "   deployment to use content from the 'main' branch instead of '$CURRENT_BRANCH'."
+  echo ""
+  echo "Detected Issues:"
+  echo ""
+  
+  for DETAIL_ITEM in "${PROBLEM_DETAILS[@]}"; do
+    echo -e "$DETAIL_ITEM" # Use -e to interpret \n
+    # Add an extra newline after each full problem detail block for readability
+    echo ""
+  done
+
+  echo "Why this can be an issue:"
+  echo "  If an ArgoCD application for your '$CURRENT_BRANCH' branch (e.g., created with --path base)"
+  echo "  uses a configuration file (like an ApplicationSet in 'base/mip-infrastructure/mip-infrastructure.yaml'),"
+  echo "  and that file internally specifies 'revision: main' or 'targetRevision: main',"
+  echo "  then the deployment for '$CURRENT_BRANCH' will pull those specific parts from 'main'."
+  echo ""
+  echo "Recommended Actions:"
+  echo "1. In each file listed above, update the problematic lines:"
+  echo "   - Change 'revision: main' to 'revision: $CURRENT_BRANCH'"
+  echo "   - Change 'targetRevision: main' to 'targetRevision: $CURRENT_BRANCH'"
+  echo "   (Ensure these keywords are at the start of a line or appropriately indented)."
+  echo ""
+  echo "2. If you modified these files to make corrections, stage your changes:"
+  echo "   git add <file1> <file2> ..."
+  echo ""
+  echo "3. Try your commit again."
+  echo ""
+  echo "If you believe these settings pointing to 'main' are intentional for your '$CURRENT_BRANCH'"
+  echo "(and understand the implications for your branch deployment), you can bypass this"
+  echo "check for this specific commit using: git commit --no-verify"
+  echo ""
+  echo "---------------------------------------------------------------------------------"
+  echo "Deployment command for branch '$CURRENT_BRANCH' (after ensuring files are correct):"
+  SAFE_BRANCH_NAME=$(echo "$CURRENT_BRANCH" | sed 's/[^a-zA-Z0-9]/-/g')
+  echo "   argocd app create ${SAFE_BRANCH_NAME}-infra-clusterset \\"
+  echo "     --repo https://github.com/NeuroTech-Platform/mip-infra.git \\"
+  echo "     --path base/mip-infrastructure \\"
+  echo "     --revision $CURRENT_BRANCH \\"
+  echo "     --dest-server https://kubernetes.default.svc \\"
+  echo "     --dest-namespace argocd-mip-team"
+  echo "   argocd app sync ${SAFE_BRANCH_NAME}-infra-clusterset"
+  echo "---------------------------------------------------------------------------------"
+  exit 1
+fi
+
+echo "✅ All checks passed for branch '$CURRENT_BRANCH'."
+exit 0 

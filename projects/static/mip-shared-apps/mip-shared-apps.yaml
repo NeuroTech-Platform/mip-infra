@@ -1,0 +1,87 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-shared-apps
+  namespace: argocd-mip-team
+spec:
+  description: Shared applications like exareme2 and mip-stack
+  sourceRepos:
+    - https://github.com/NeuroTech-Platform/mip-infra.git
+    - https://github.com/madgik/exareme2
+    - https://github.com/HBPMedical/mip-deployment
+  destinations:
+    - namespace: federation-*
+      server: https://kubernetes.default.svc
+    - namespace: test-*
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: argoproj.io
+      kind: Application
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: apps
+      kind: DaemonSet
+    - group: apps
+      kind: ReplicaSet
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: PersistentVolumeClaim
+    - group: ''
+      kind: ServiceAccount
+    - group: ''
+      kind: Pod
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: batch
+      kind: Job
+    - group: batch
+      kind: CronJob
+    - group: extensions
+      kind: Ingress
+  # Explicitly blacklist sensitive resources to be future proof
+  clusterResourceBlacklist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications: ['*']
+  roles:
+    - name: shared-apps-admin
+      description: Full access to shared applications
+      policies:
+        - p, proj:mip-argo-project-shared-apps:shared-apps-admin, applications, *,
+          mip-shared-apps/*, allow
+      groups: [argocd-admins]
+    - name: shared-apps-developer
+      description: Limited access to shared applications
+      policies:
+        - p, proj:mip-argo-project-shared-apps:shared-apps-developer, applications,
+          sync, mip-shared-apps/*, allow
+        - p, proj:mip-argo-project-shared-apps:shared-apps-developer, applications,
+          get, mip-shared-apps/*, allow
+      groups: [argocd-developers]

@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    argocd.instance: mip-team
+data:
+  url: https://argocd.example.com
+  application.resourceTrackingMethod: label
+  application.instanceLabelKey: argocd.argoproj.io/instanceTracking
+  installationID: mip-team-argo-cd
+  resource.respectRBAC: normal

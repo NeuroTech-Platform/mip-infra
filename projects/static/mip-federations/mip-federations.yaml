@@ -1,0 +1,88 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-federations
+  namespace: argocd-mip-team
+spec:
+  description: Federation-specific applications and configurations
+  sourceRepos:
+    - https://github.com/NeuroTech-Platform/mip-infra.git
+    - git@github.com:NeuroTech-Platform/mip-deployments.git
+    - https://github.com/madgik/exareme2
+    - https://github.com/HBPMedical/mip-deployment
+  destinations:
+    - namespace: federation-*
+      server: https://kubernetes.default.svc
+    - namespace: argocd-mip-team
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: argoproj.io
+      kind: Application
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: apps
+      kind: DaemonSet
+    - group: apps
+      kind: ReplicaSet
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: PersistentVolumeClaim
+    - group: ''
+      kind: ServiceAccount
+    - group: ''
+      kind: Pod
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: batch
+      kind: Job
+    - group: batch
+      kind: CronJob
+    - group: extensions
+      kind: Ingress
+  # Explicitly blacklist sensitive resources to be future proof
+  clusterResourceBlacklist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications: ['*']
+  roles:
+    - name: federation-admin
+      description: Full access to federation resources
+      policies:
+        - p, proj:mip-argo-project-federations:federation-admin, applications, *,
+          mip-argo-project-federations/*, allow
+      groups: [argocd-admins]
+    - name: federation-developer
+      description: Limited access to federation resources
+      policies:
+        - p, proj:mip-argo-project-federations:federation-developer, applications,
+          sync, mip-argo-project-federations/*, allow
+        - p, proj:mip-argo-project-federations:federation-developer, applications,
+          get, mip-argo-project-federations/*, allow
+      groups: [argocd-developers]

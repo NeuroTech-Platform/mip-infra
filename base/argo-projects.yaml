@@ -1,0 +1,103 @@
+---
+# Static AppProjects ApplicationSet
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: mip-argo-projects
+  namespace: argocd-mip-team
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    argocd.instance: mip-team
+  annotations:
+    argocd.argoproj.io/note: 'Manages static AppProjects: mip-federations, mip-shared-apps,
+      mip-common'
+spec:
+  generators:
+    - list:
+        elements:
+          - projectName: mip-argo-project-federations
+            fileName: mip-federations
+          - projectName: mip-argo-project-shared-apps
+            fileName: mip-shared-apps
+          - projectName: mip-argo-project-common
+            fileName: mip-common
+  goTemplate: true
+  template:
+    metadata:
+      name: '{{ .projectName }}-app'
+      labels:
+        app.kubernetes.io/part-of: mip-argo-projects
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      project: mip-argo-project-infrastructure
+      source:
+        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        targetRevision: main
+        path: projects/static/{{ .fileName }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd-mip-team
+      syncPolicy:
+        syncOptions: [CreateNamespace=true]
+        automated:
+          selfHeal: true
+---
+# Dynamic Federation AppProjects ApplicationSet
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: mip-argo-projects-of-federations
+  namespace: argocd-mip-team
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    argocd.instance: mip-team
+  annotations:
+    argocd.argoproj.io/note: Generates federation-specific AppProjects dynamically
+spec:
+  generators:
+    - git:
+        repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
+        revision: main
+        directories:
+          - path: deployments/local/federations/*
+  goTemplate: true
+  template:
+    metadata:
+      name: argo-project-{{ .path.basename | lower }}-app
+      labels:
+        app.kubernetes.io/part-of: argo-project-{{ .path.basename | lower }}
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      project: mip-argo-project-infrastructure
+      source:
+        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        targetRevision: main
+        path: projects/templates/federation
+        helm:
+          valueFiles: [values.yaml]
+          parameters:
+            - name: federationName
+              value: '{{ .path.basename | lower }}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: argocd-mip-team
+      syncPolicy:
+        syncOptions: [CreateNamespace=true]
+        automated:
+          selfHeal: true
+---
+# default should not be allowed anything
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: default
+spec:
+  sourceRepos: []
+  sourceNamespaces: []
+  destinations: []
+  namespaceResourceBlacklist:
+    - group: '*'
+      kind: '*'
+  clusterResourceBlacklist:
+    - group: '*'
+      kind: '*'

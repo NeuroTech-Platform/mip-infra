@@ -1,0 +1,4 @@
+---
+log_level: DEBUG
+managed_cluster: true
+namespace: federation-a

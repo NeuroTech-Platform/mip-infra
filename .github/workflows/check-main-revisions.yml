@@ -1,0 +1,81 @@
+---
+name: Check Main Branch Revisions
+on:
+  pull_request:
+    branches:
+      - main
+    # Optional: You can also specify paths if you only want this to run when specific files change
+    # paths:
+    #   - 'base/mip-infrastructure/mip-infrastructure.yaml'
+jobs:
+  check-revisions:
+    name: Verify Revisions in All YAML Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR Code
+        uses: actions/checkout@v4
+        # This checks out the code of the PR's merge commit.
+      - name: Check revision and targetRevision fields in all YAML files
+        run: |-
+          # Turn off xtrace and disable errexit for controlled flow
+          set +e
+          ERROR_FLAG_FILE=$(mktemp)
+          PROBLEM_DETAILS_FILE=$(mktemp)
+          rm -f "$ERROR_FLAG_FILE"  # Ensure error flag file doesn't exist initially
+
+          # Process all files silently
+          find . -type f \( -name "*.yaml" -o -name "*.yml" \) -print0 | while IFS= read -r -d $'\0' YAML_FILE; do
+            # Check regular revision fields (always need to be main)
+            REVISION_PROBLEMS=$(grep -nHE '^[[:space:]]*revision:[[:space:]]+' "$YAML_FILE" 2>/dev/null | grep -vE ":[[:space:]]+main[[:space:]]*$" 2>/dev/null || true)
+            
+            # For targetRevision, we need to check if it's associated with our repo
+            TARGET_REVISIONS=$(grep -nHE '^[[:space:]]*targetRevision:[[:space:]]+' "$YAML_FILE" 2>/dev/null | grep -vE ":[[:space:]]+main[[:space:]]*$" 2>/dev/null || true)
+            TARGET_REVISION_PROBLEMS=""
+            
+            if [[ -n "$TARGET_REVISIONS" ]]; then
+              # Extract line numbers where non-main targetRevision appears
+              while read -r LINE; do
+                LINE_NUM=$(echo "$LINE" | grep -oE "^[^:]+:[0-9]+" | cut -d':' -f2)
+                # Check surrounding lines for repoURL (5 lines before and after)
+                CONTEXT=$(sed -n "$((LINE_NUM-5)),$((LINE_NUM+5))p" "$YAML_FILE" 2>/dev/null || true)
+                
+                # Only add to problems if associated with our repo
+                if echo "$CONTEXT" | grep -q "repoURL:.*NeuroTech-Platform/mip-infra"; then
+                  TARGET_REVISION_PROBLEMS+="$LINE"$'\n'
+                fi
+              done <<< "$TARGET_REVISIONS"
+            fi
+            
+            PROBLEMS="$REVISION_PROBLEMS"
+            if [[ -n "$TARGET_REVISION_PROBLEMS" ]]; then
+              if [[ -n "$PROBLEMS" ]]; then
+                PROBLEMS+=$'\n'
+              fi
+              PROBLEMS+="$TARGET_REVISION_PROBLEMS"
+            fi
+            
+            if [[ -n "$PROBLEMS" ]]; then
+              echo "::error file=$YAML_FILE::Found 'revision' or 'targetRevision' not set to 'main'"
+              # Create the error flag file to indicate an error was found
+              touch "$ERROR_FLAG_FILE"
+              
+              echo "In file '$YAML_FILE':" >> "$PROBLEM_DETAILS_FILE"
+              echo "$PROBLEMS" | sed 's/^[^:]*:\([0-9]*\):\(.*\)/    L\1: \2/' >> "$PROBLEM_DETAILS_FILE"
+              echo "" >> "$PROBLEM_DETAILS_FILE"
+            fi
+          done
+
+          # After the loop, check if the error flag file was created
+          if [[ -f "$ERROR_FLAG_FILE" ]]; then
+            echo "❌ Error: Pull request to 'main' contains YAML configurations not pointing to 'main'."
+            echo "All '.yaml' and '.yml' files must have their 'revision:' and 'targetRevision:' fields"
+            echo "set to 'main' when merging into the 'main' branch."
+            echo ""
+            echo "Detected Issues:"
+            cat "$PROBLEM_DETAILS_FILE"
+            rm "$ERROR_FLAG_FILE" "$PROBLEM_DETAILS_FILE"
+            exit 1
+          else
+            echo "✅ All 'revision' and 'targetRevision' fields in all scanned YAML files are correctly set to 'main'."
+          fi
+          rm -f "$ERROR_FLAG_FILE" "$PROBLEM_DETAILS_FILE"  # Clean up temp files if no errors

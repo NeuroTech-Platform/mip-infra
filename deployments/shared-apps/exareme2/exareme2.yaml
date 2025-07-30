@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  # This name will be overridden by the federation-specific kustomize patch
+  name: exareme2
+  namespace: argocd-mip-team
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'
+spec:
+  sources:
+    - repoURL: https://github.com/madgik/exareme2
+      targetRevision: managed_cluster
+      path: kubernetes
+      helm:
+        valueFiles:
+          - values.yaml
+          - $values/deployments/shared-apps/exareme2/values.yaml
+    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+      targetRevision: main
+      ref: values
+  destination:
+    server: https://kubernetes.default.svc
+    # This will be overridden by the federation-specific kustomize patch
+    namespace: placeholder-namespace
+  syncPolicy:
+    syncOptions: [CreateNamespace=true]
+    automated:
+      selfHeal: true

@@ -1,0 +1,120 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-common
+  namespace: argocd-mip-team
+spec:
+  description: Common resources like monitoring, security, and datacatalog
+  sourceRepos:
+    - https://github.com/NeuroTech-Platform/mip-infra.git
+    - https://github.com/madgik/datacatalog
+    - https://prometheus-community.github.io/helm-charts
+    - https://grafana.github.io/helm-charts
+    - https://kubernetes.github.io/ingress-nginx
+    - https://charts.jetstack.io
+  destinations:
+    - namespace: monitoring
+      server: https://kubernetes.default.svc
+    - namespace: security
+      server: https://kubernetes.default.svc
+    - namespace: mip-common-datacatalog
+      server: https://kubernetes.default.svc
+    - namespace: kube-system
+      server: https://kubernetes.default.svc
+    - namespace: ingress-nginx
+      server: https://kubernetes.default.svc
+    - namespace: cert-manager
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+    - group: ''
+      kind: PersistentVolume
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+    - group: admissionregistration.k8s.io
+      kind: ValidatingAdmissionWebhook
+    - group: admissionregistration.k8s.io
+      kind: MutatingAdmissionWebhook
+  namespaceResourceWhitelist:
+    - group: argoproj.io
+      kind: Application
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: apps
+      kind: DaemonSet
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: PersistentVolumeClaim
+    - group: ''
+      kind: ServiceAccount
+    - group: ''
+      kind: Pod
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: batch
+      kind: Job
+    - group: batch
+      kind: CronJob
+    - group: extensions
+      kind: Ingress
+    - group: monitoring.coreos.com
+      kind: ServiceMonitor
+    - group: monitoring.coreos.com
+      kind: PrometheusRule
+    - group: cert-manager.io
+      kind: Certificate
+    - group: cert-manager.io
+      kind: Issuer
+    - group: cert-manager.io
+      kind: ClusterIssuer
+  # Explicitly blacklist sensitive resources to be future proof
+  clusterResourceBlacklist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications: ['*']
+  roles:
+    - name: common-admin
+      description: Full access to common resources
+      policies:
+        - p, proj:mip-argo-project-common:common-admin, applications, *, mip-argo-project-common/*,
+          allow
+      groups: [argocd-admins]
+    - name: common-operator
+      description: Limited access to common resources
+      policies:
+        - p, proj:mip-argo-project-common:common-operator, applications, sync, mip-argo-project-common/*,
+          allow
+        - p, proj:mip-argo-project-common:common-operator, applications, get, mip-argo-project-common/*,
+          allow
+      groups: [argocd-operators]
