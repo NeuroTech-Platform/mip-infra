@@ -33,7 +33,6 @@ spec:
               revision: main
               directories:
                 # Cluster-wide applications (not for use for the federations, use deployments/shared-apps instead and not declared here)
-                # - path: common/*  # when things work, we can add this back instead of the ones below
                 - path: common/datacatalog
           - list:
               elements:
@@ -48,9 +47,9 @@ spec:
       name: '{{ index .path.segments 0 }}-{{ .path.basename | lower }}'
       labels:
         app.kubernetes.io/part-of: '{{ .clusterName }}.cluster-{{ index .path.segments
-          0 }}-{{ .path.basename | lower }}'
+          0 }}-{{ if contains "federations" .path.path }}{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}{{ else }}{{ .path.basename | lower }}{{ end }}'
     spec:
-      project: mip-argo-project-infrastructure
+      project: '{{ if contains "federations" .path.path }}mip-argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}{{ else }}mip-argo-project-infrastructure{{ end }}'
       source:
         repoURL: '{{ .repoURL }}'
         targetRevision: main

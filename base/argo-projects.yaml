@@ -60,12 +60,13 @@ spec:
         revision: main
         directories:
           - path: deployments/local/federations/*
+          - path: deployments/hybrid/federations/*/mip-infrastructure
   goTemplate: true
   template:
     metadata:
-      name: argo-project-{{ .path.basename | lower }}-app
+      name: argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}-app
       labels:
-        app.kubernetes.io/part-of: argo-project-{{ .path.basename | lower }}
+        app.kubernetes.io/part-of: argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}
         app.kubernetes.io/managed-by: argocd
     spec:
       project: mip-argo-project-infrastructure
@@ -77,7 +78,7 @@ spec:
           valueFiles: [values.yaml]
           parameters:
             - name: federationName
-              value: '{{ .path.basename | lower }}'
+              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
       destination:
         server: https://kubernetes.default.svc
         namespace: argocd-mip-team
