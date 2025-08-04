@@ -44,7 +44,7 @@ spec:
   template:
     metadata:
       # Create a unique name based on both path and cluster
-      name: '{{ .path.path | replace "/" "-" | lower }}'
+      name: '{{ .path.path | replace "/" "-" | lower | replace "federations-federation-" "" }}'
       labels:
         app.kubernetes.io/part-of: '{{ .clusterName }}.cluster-{{ index .path.segments
           0 }}-{{ if contains "federations" .path.path }}{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}{{ else }}{{ .path.basename | lower }}{{ end }}'
