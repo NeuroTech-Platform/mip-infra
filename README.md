@@ -258,9 +258,7 @@ git checkout main
 1.  Deploy Argo as described in [argo-setup/README.md](argo-setup/README.md), then follow the steps below.
 
 
-2. Prepare the repos:
-
-Add the deployment repository to Argo CD:
+2. Add the deployment repository to Argo CD:
 
 ```bash
 argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
@@ -270,7 +268,6 @@ argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
 
 
 3. **IMPORTANT:** Bootstrap deployment (two-step process):
-
 
 ```bash
 
@@ -302,9 +299,6 @@ kubectl get appprojects -n argocd-mip-team
 4. Deploy the main infrastructure:
 
 ```bash
-# Get current branch for Application name
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-SAFE_BRANCH_NAME=$(echo "$CURRENT_BRANCH" | sed 's/[^a-zA-Z0-9]/-/g')
 
 # Create the infrastructure application using Argo CD CLI
 argocd app create ${SAFE_BRANCH_NAME}-infra-clusterset \
