@@ -13,7 +13,7 @@ spec:
         generators:
           - git:
               repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
-              revision: main
+              revision: dev/initial_setup_for_mip_deployments
               directories:
                 # Local federations
                 - path: deployments/local/federations/*
@@ -30,7 +30,7 @@ spec:
         generators:
           - git:
               repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-              revision: main
+              revision: dev/initial_setup_for_mip_deployments
               directories:
                 # Cluster-wide applications (not for use for the federations, use deployments/shared-apps instead and not declared here)
                 - path: common/datacatalog
@@ -52,7 +52,7 @@ spec:
       project: '{{ if contains "federations" .path.path }}mip-argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}{{ else }}mip-argo-project-infrastructure{{ end }}'
       source:
         repoURL: '{{ .repoURL }}'
-        targetRevision: main
+        targetRevision: dev/initial_setup_for_mip_deployments
         path: '{{ .path.path }}'  # ensures we're using the exact path from the Git repository with the original case preserved
         kustomize:
           namePrefix: ''

@@ -32,7 +32,7 @@ spec:
       project: mip-argo-project-infrastructure
       source:
         repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-        targetRevision: main
+        targetRevision: dev/initial_setup_for_mip_deployments
         path: projects/static/{{ .fileName }}
       destination:
         server: https://kubernetes.default.svc
@@ -57,7 +57,7 @@ spec:
   generators:
     - git:
         repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
-        revision: main
+        revision: dev/initial_setup_for_mip_deployments
         directories:
           - path: deployments/local/federations/*
           - path: deployments/hybrid/federations/*/mip-infrastructure
@@ -72,7 +72,7 @@ spec:
       project: mip-argo-project-infrastructure
       source:
         repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-        targetRevision: main
+        targetRevision: dev/initial_setup_for_mip_deployments
         path: projects/templates/federation
         helm:
           valueFiles: [values.yaml]
