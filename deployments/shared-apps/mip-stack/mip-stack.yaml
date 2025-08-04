@@ -17,8 +17,8 @@ spec:
         valueFiles:
           - values.yaml
           - $values/deployments/shared-apps/mip-stack/values.yaml
-    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-      targetRevision: main
+    - repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
+      targetRevision: dev/initial_setup_for_mip_deployments
       ref: values
   destination:
     server: https://kubernetes.default.svc

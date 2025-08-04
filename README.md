@@ -244,15 +244,7 @@ data:
 
 ### Setup
 
-1. Add the deployment repository to Argo CD:
-
-```bash
-argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
-  --ssh-private-key-path ./argocd-remote-key \
-  --name mip-infra
-```
-
-2. Clone and checkout the repository:
+0. Clone and checkout the repository:
 
 ```bash
 # Clone the repository 
@@ -260,12 +252,25 @@ git clone https://github.com/NeuroTech-Platform/mip-infra.git
 cd mip-infra
 
 # Checkout the desired branch (main for production, or your feature branch)
-git checkout main  # or: git checkout your-feature-branch
+git checkout main  
 ```
+
+1.  Deploy Argo as described in [argo-setup/README.md](argo-setup/README.md), then follow the steps below.
+
+
+2. Prepare the repos:
+
+Add the deployment repository to Argo CD:
+
+```bash
+argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
+  --ssh-private-key-path ./argocd-remote-key \
+  --name mip-infra
+```
+
 
 3. **IMPORTANT:** Bootstrap deployment (two-step process):
 
-** Step 1 **: Deploy Argo as described in [argo-setup/README.md](argo-setup/README.md), then follow the steps below.
 
 ```bash
 
