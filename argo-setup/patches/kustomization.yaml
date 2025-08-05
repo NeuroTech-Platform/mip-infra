@@ -17,3 +17,4 @@ patchesStrategicMerge:
   - patch-argocd-cmd-params-cm.yaml
   - patch-argocd-cm.yaml
   - patch-argocd-server-extra-read.yaml
+  - patch-argocd-server-clusterrolebinding.yaml

@@ -8,7 +8,50 @@ metadata:
     app.kubernetes.io/name: argocd-server
     app.kubernetes.io/part-of: argocd
 rules:
-  # Add NetworkPolicy read permissions for viewing network policies in ArgoCD UI
+  # Original ArgoCD server permissions
+  - apiGroups:
+      - '*'
+    resources:
+      - '*'
+    verbs:
+      - delete
+      - get
+      - patch
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - pods/log
+    verbs:
+      - get
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - applications
+      - applicationsets
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+    verbs:
+      - create
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - workflows
+    verbs:
+      - create
+  # Additional NetworkPolicy read permissions for viewing network policies in ArgoCD UI
   - apiGroups:
       - networking.k8s.io
     resources:
@@ -17,7 +60,7 @@ rules:
       - get
       - list
       - watch
-  # Add Namespace read permissions (needed to view namespace details with NetworkPolicies)
+  # Additional Namespace read permissions (needed to view namespace details with NetworkPolicies)
   - apiGroups:
       - ""
     resources:
