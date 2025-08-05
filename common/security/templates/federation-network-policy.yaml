@@ -1,28 +1,18 @@
 ---
-# Ensure namespace exists with proper labels
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {{ .Values.targetNamespace }}
-  labels:
-    name: {{ .Values.targetNamespace }}
-    mip.federation-type: {{ .Values.federationType }}
-    app.kubernetes.io/managed-by: argocd
----
-# Namespace isolation policy for {{ .Values.targetNamespace }}
+# Namespace isolation policy for {{.Values.targetNamespace}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: federation-namespace-isolation
-  namespace: {{ .Values.targetNamespace }}
+  namespace: {{.Values.targetNamespace}}
   labels:
     app.kubernetes.io/name: federation-network-policy
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{.Release.Name}}
+    app.kubernetes.io/managed-by: {{.Release.Service}}
     mip.namespace-type: federation
-    mip.federation-type: {{ .Values.federationType }}
+    mip.federation-type: {{.Values.federationType}}
 spec:
-  podSelector: {}  # Apply to all pods in the namespace
+  podSelector: {}
   policyTypes:
     - Ingress
     - Egress
@@ -31,29 +21,29 @@ spec:
     - from:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.targetNamespace }}
+              name: {{.Values.targetNamespace}}
     # Allow traffic from ArgoCD for management
     - from:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.argoCDNamespace | default "argocd-mip-team" }}
+              name: {{.Values.argoCDNamespace}}
   egress:
     # Allow traffic to pods within the same namespace
     - to:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.targetNamespace }}
+              name: {{.Values.targetNamespace}}
     # Allow DNS queries to kube-system
     - to:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.systemNamespace | default "kube-system" }}
+              name: {{.Values.systemNamespace}}
       ports:
         - protocol: UDP
           port: 53
         - protocol: TCP
           port: 53
-    # Allow HTTPS egress for external dependencies (container registries, etc.)
+    # Allow HTTPS egress for external dependencies
     - to: []
       ports:
         - protocol: TCP
@@ -64,18 +54,18 @@ spec:
         - protocol: TCP
           port: 80
 ---
-# Default deny policy for {{ .Values.targetNamespace }}
+# Default deny policy for {{.Values.targetNamespace}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: federation-default-deny
-  namespace: {{ .Values.targetNamespace }}
+  namespace: {{.Values.targetNamespace}}
   labels:
     app.kubernetes.io/name: federation-network-policy
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{.Release.Name}}
+    app.kubernetes.io/managed-by: {{.Release.Service}}
     mip.namespace-type: federation
-    mip.federation-type: {{ .Values.federationType }}
+    mip.federation-type: {{.Values.federationType}}
 spec:
   podSelector: {}
   policyTypes:
