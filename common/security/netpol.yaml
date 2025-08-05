@@ -95,6 +95,7 @@ spec:
         namespace: '{{ .commonNamespace }}'
       syncPolicy:
         syncOptions: 
+          - CreateNamespace=true
           - ApplyOutOfSyncOnly=true
         automated:
           selfHeal: true
