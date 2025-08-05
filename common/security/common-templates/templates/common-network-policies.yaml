@@ -16,11 +16,11 @@ spec:
     - Ingress
     - Egress
   ingress:
-    # Allow traffic from pods within the same namespace
+    # Allow traffic from pods within the same namespace (compatible with all K8s distros)
     - from:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.targetNamespace }}
+              kubernetes.io/metadata.name: {{ .Values.targetNamespace }}
     {{- if .Values.federationAccess.local.enabled }}
     {{- if has .Values.targetNamespace .Values.federationAccess.local.allowedCommonNamespaces }}
     # Allow traffic from local federation namespaces (when enabled)
@@ -39,22 +39,22 @@ spec:
               mip.federation-type: hybrid
     {{- end }}
     {{- end }}
-    # Allow traffic from ArgoCD for management
+    # Allow traffic from ArgoCD for management (compatible with all K8s distros)
     - from:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.argoCDNamespace }}
+              kubernetes.io/metadata.name: {{ .Values.argoCDNamespace }}
   egress:
-    # Allow traffic to pods within the same namespace
+    # Allow traffic to pods within the same namespace (compatible with all K8s distros)
     - to:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.targetNamespace }}
-    # Allow DNS queries to kube-system
+              kubernetes.io/metadata.name: {{ .Values.targetNamespace }}
+    # Allow DNS queries to kube-system (compatible with all K8s distros)
     - to:
         - namespaceSelector:
             matchLabels:
-              name: {{ .Values.systemNamespace }}
+              kubernetes.io/metadata.name: {{ .Values.systemNamespace }}
       ports:
         {{- if .Values.networkPolicy.dns.allowUDP }}
         - protocol: UDP
