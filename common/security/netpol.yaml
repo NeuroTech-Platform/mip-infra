@@ -1,0 +1,78 @@
+---
+# ApplicationSet for auto-discovered federation network policies
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: federation-network-policies
+  namespace: argocd-mip-team
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    argocd.instance: mip-team
+  annotations:
+    argocd.argoproj.io/note: 'Auto-discovers federations and applies network isolation policies'
+spec:
+  generators:
+    # Auto-discover federation directories - same pattern as main ApplicationSet
+    - matrix:
+        generators:
+          - git:
+              repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
+              revision: dev/initial_setup_for_mip_deployments
+              directories:
+                # Local federations
+                - path: deployments/local/federations/*
+                # Hybrid federations  
+                - path: deployments/hybrid/federations/*/mip-infrastructure
+          - list:
+              elements:
+                - cluster: https://kubernetes.default.svc
+                  namespace: argocd-mip-team
+                  clusterName: default
+  goTemplate: true
+  template:
+    metadata:
+      name: 'netpol-{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}'
+      labels:
+        app.kubernetes.io/part-of: federation-network-policies
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      project: mip-argo-project-infrastructure
+      source:
+        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        targetRevision: main
+        path: common/security/templates
+        helm:
+          parameters:
+            - name: targetNamespace
+              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
+            - name: federationType
+              value: '{{ if contains "local" .path.path }}local{{ else }}hybrid{{ end }}'
+      destination:
+        server: '{{ .cluster }}'
+        namespace: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
+      syncPolicy:
+        syncOptions: [CreateNamespace=true]
+        automated:
+          selfHeal: true
+---
+# Static application for common namespace network policies
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: common-network-policies
+  namespace: argocd-mip-team
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: mip-argo-project-infrastructure
+  source:
+    repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+    targetRevision: main
+    path: common/security/common-templates
+    helm:
+      valueFiles: [values.yaml]
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions: [CreateNamespace=true]
+    automated:
+      selfHeal: true 

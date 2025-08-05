@@ -1,0 +1,14 @@
+apiVersion: v2
+name: mip-security-policies
+description: Network isolation policies for MIP federations and common namespaces
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - security
+  - networkpolicy
+  - isolation
+sources:
+  - https://github.com/NeuroTech-Platform/mip-infra
+maintainers:
+  - name: MIP Team 

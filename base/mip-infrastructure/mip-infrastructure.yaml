@@ -34,6 +34,7 @@ spec:
               directories:
                 # Cluster-wide applications (not for use for the federations, use deployments/shared-apps instead and not declared here)
                 - path: common/datacatalog
+                - path: common/security
           - list:
               elements:
                 - cluster: https://kubernetes.default.svc

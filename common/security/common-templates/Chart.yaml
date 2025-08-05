@@ -1,0 +1,15 @@
+apiVersion: v2
+name: common-network-policies
+description: Network isolation policies for common namespaces (mip-common-*)
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - security
+  - networkpolicy
+  - common
+  - isolation
+sources:
+  - https://github.com/NeuroTech-Platform/mip-infra
+maintainers:
+  - name: MIP Team 

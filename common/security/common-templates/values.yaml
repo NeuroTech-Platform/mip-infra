@@ -1,0 +1,47 @@
+# Network Policy Configuration for MIP Infrastructure
+# This file defines common namespaces and federation access control
+
+# Common namespaces that should be isolated
+commonNamespaces:
+  - mip-common-datacatalog
+  # - mip-common-monitoring
+  - mip-common-security
+
+# ArgoCD namespace for management access
+argoCDNamespace: argocd-mip-team
+
+# Kubernetes system namespace for DNS
+systemNamespace: kube-system
+
+# Federation access control to common namespaces
+# NOTE: Federation namespaces are now auto-discovered from git repositories
+# Access control is based on federation TYPE (local/hybrid) rather than specific namespace names
+federationAccess:
+  # Allow local federation namespaces to access common services
+  local:
+    enabled: false 
+    # List of common namespaces that local federations can access (when enabled)
+    allowedCommonNamespaces: []
+      # - mip-common-datacatalog
+      # - mip-common-monitoring
+      # - mip-common-security  # Usually should not be accessible
+  
+  # Allow hybrid federation namespaces to access common services  
+  hybrid:
+    enabled: false
+    allowedCommonNamespaces: []
+
+# Global network policy settings
+networkPolicy:
+  # Allow external HTTP/HTTPS for container registries and external APIs
+  allowExternalHTTP: true
+  allowExternalHTTPS: true
+  
+  # DNS settings
+  dns:
+    allowUDP: true
+    allowTCP: true
+    port: 53
+  
+  # Enable default deny policies (recommended for security)
+  enableDefaultDeny: true 

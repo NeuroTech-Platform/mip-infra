@@ -28,6 +28,8 @@ spec:
       kind: ApplicationSet
     - group: argoproj.io
       kind: AppProject
+    - group: networking.k8s.io
+      kind: NetworkPolicy
   # Explicitly blacklist sensitive resources to be future proof
   clusterResourceBlacklist:
     - group: rbac.authorization.k8s.io

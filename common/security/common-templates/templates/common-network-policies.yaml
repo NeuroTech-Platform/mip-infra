@@ -1,0 +1,101 @@
+{{- range .Values.commonNamespaces }}
+---
+# Namespace isolation policy for {{ . }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mip-common-namespace-isolation
+  namespace: {{ . }}
+  labels:
+    app.kubernetes.io/name: common-network-policies
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    mip.namespace-type: common
+spec:
+  podSelector: {}  # Apply to all pods in the namespace
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow traffic from pods within the same namespace
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: {{ . }}
+    {{- if $.Values.federationAccess.local.enabled }}
+    {{- if has . $.Values.federationAccess.local.allowedCommonNamespaces }}
+    # Allow traffic from local federation namespaces (when enabled)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              mip.federation-type: local
+    {{- end }}
+    {{- end }}
+    {{- if $.Values.federationAccess.hybrid.enabled }}
+    {{- if has . $.Values.federationAccess.hybrid.allowedCommonNamespaces }}
+    # Allow traffic from hybrid federation namespaces (when enabled)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              mip.federation-type: hybrid
+    {{- end }}
+    {{- end }}
+    # Allow traffic from ArgoCD for management
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: {{ $.Values.argoCDNamespace }}
+  egress:
+    # Allow traffic to pods within the same namespace
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: {{ . }}
+    # Allow DNS queries to kube-system
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              name: {{ $.Values.systemNamespace }}
+      ports:
+        {{- if $.Values.networkPolicy.dns.allowUDP }}
+        - protocol: UDP
+          port: {{ $.Values.networkPolicy.dns.port }}
+        {{- end }}
+        {{- if $.Values.networkPolicy.dns.allowTCP }}
+        - protocol: TCP
+          port: {{ $.Values.networkPolicy.dns.port }}
+        {{- end }}
+    {{- if $.Values.networkPolicy.allowExternalHTTPS }}
+    # Allow HTTPS egress for external dependencies
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+    {{- end }}
+    {{- if $.Values.networkPolicy.allowExternalHTTP }}
+    # Allow HTTP egress for external dependencies
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+    {{- end }}
+{{- if $.Values.networkPolicy.enableDefaultDeny }}
+---
+# Default deny policy for {{ . }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mip-common-default-deny
+  namespace: {{ . }}
+  labels:
+    app.kubernetes.io/name: common-network-policies
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    mip.namespace-type: common
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+{{- end }}
+{{- end }} 
