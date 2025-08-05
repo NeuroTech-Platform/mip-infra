@@ -40,7 +40,7 @@ spec:
       source:
         repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
         targetRevision: dev/initial_setup_for_mip_deployments
-        path: common/security/templates
+        path: common/security/federation
         helm:
           parameters:
             - name: targetNamespace
