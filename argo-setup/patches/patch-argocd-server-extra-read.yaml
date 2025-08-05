@@ -8,7 +8,57 @@ metadata:
     app.kubernetes.io/name: argocd-server
     app.kubernetes.io/part-of: argocd
 rules:
-  # Minimal NetworkPolicy read permissions for ArgoCD UI viewing
+  # Core Kubernetes resources ArgoCD server needs to read
+  - apiGroups:
+      - ""
+    resources:
+      - events
+      - namespaces
+      - pods
+      - pods/log
+      - configmaps
+      - secrets
+      - services
+      - persistentvolumeclaims
+    verbs:
+      - get
+      - list
+      - watch
+  # ArgoCD specific resources
+  - apiGroups:
+      - argoproj.io
+    resources:
+      - applications
+      - applicationsets
+      - appprojects
+      - workflows
+    verbs:
+      - get
+      - list
+      - watch
+  # Batch jobs (for workflow triggers)
+  - apiGroups:
+      - batch
+    resources:
+      - jobs
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+  # Apps and extensions
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - replicasets
+      - statefulsets
+      - daemonsets
+    verbs:
+      - get
+      - list
+      - watch
+  # NetworkPolicy viewing support
   - apiGroups:
       - networking.k8s.io
     resources:
