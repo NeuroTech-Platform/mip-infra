@@ -51,9 +51,14 @@ spec:
         server: '{{ .cluster }}'
         namespace: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base }}{{ end }}'
       syncPolicy:
-        syncOptions: [CreateNamespace=true]
+        syncOptions: 
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
         automated:
           selfHeal: true
+          prune: true
 ---
 # ApplicationSet for common namespace network policies
 apiVersion: argoproj.io/v1alpha1
@@ -89,12 +94,15 @@ spec:
           parameters:
             - name: targetNamespace
               value: '{{ .commonNamespace }}'
-            - name: commonNamespaces
-              value: '["{{ .commonNamespace }}"]'
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{ .commonNamespace }}'
       syncPolicy:
-        syncOptions: [CreateNamespace=true]
+        syncOptions: 
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+          - PrunePropagationPolicy=foreground
+          - PruneLast=true
         automated:
-          selfHeal: true 
+          selfHeal: true
+          prune: true 

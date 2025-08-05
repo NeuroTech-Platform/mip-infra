@@ -21,12 +21,12 @@ spec:
     - group: ''
       kind: Namespace
   namespaceResourceWhitelist:
-    # Allow NetworkPolicy management
-    - group: networking.k8s.io
-      kind: NetworkPolicy
     # Standard ArgoCD resources for ApplicationSets
     - group: argoproj.io
       kind: Application
+    # Allow NetworkPolicy management in namespaces
+    - group: networking.k8s.io
+      kind: NetworkPolicy
   # Explicitly blacklist sensitive resources
   clusterResourceBlacklist:
     - group: rbac.authorization.k8s.io
