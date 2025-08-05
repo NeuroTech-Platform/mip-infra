@@ -1,0 +1,61 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-security
+  namespace: argocd-mip-team
+spec:
+  description: Network security policies and isolation controls for MIP infrastructure
+  sourceRepos:
+    - https://github.com/NeuroTech-Platform/mip-infra.git
+    - git@github.com:NeuroTech-Platform/mip-deployments.git
+  destinations:
+    # Allow deployment to federation namespaces for network policies
+    - namespace: 'federation-*'
+      server: https://kubernetes.default.svc
+    # Allow deployment to common namespaces for network policies  
+    - namespace: 'mip-common-*'
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    # Allow namespace creation for auto-discovered federations
+    - group: ''
+      kind: Namespace
+  namespaceResourceWhitelist:
+    # Allow NetworkPolicy management
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    # Standard ArgoCD resources for ApplicationSets
+    - group: argoproj.io
+      kind: Application
+  # Explicitly blacklist sensitive resources
+  clusterResourceBlacklist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications: ['*']
+  roles:
+    - name: security-admin
+      description: Full access to network security policies
+      policies:
+        - p, proj:mip-argo-project-security:security-admin, applications, *, mip-argo-project-security/*,
+          allow
+      groups: [argocd-admins]
+    - name: security-operator
+      description: Limited access to network security policies
+      policies:
+        - p, proj:mip-argo-project-security:security-operator, applications, sync, mip-argo-project-security/*,
+          allow
+        - p, proj:mip-argo-project-security:security-operator, applications, get, mip-argo-project-security/*,
+          allow
+      groups: [argocd-operators] 

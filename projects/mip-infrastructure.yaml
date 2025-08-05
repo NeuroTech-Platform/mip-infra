@@ -12,12 +12,6 @@ spec:
   destinations:
     - namespace: argocd-mip-team
       server: https://kubernetes.default.svc
-    # Allow network policy deployment to federation namespaces
-    - namespace: 'federation-*'
-      server: https://kubernetes.default.svc
-    # Allow network policy deployment to common namespaces
-    - namespace: 'mip-common-*'
-      server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: argoproj.io
       kind: ApplicationSet
@@ -34,8 +28,6 @@ spec:
       kind: ApplicationSet
     - group: argoproj.io
       kind: AppProject
-    - group: networking.k8s.io
-      kind: NetworkPolicy
   # Explicitly blacklist sensitive resources to be future proof
   clusterResourceBlacklist:
     - group: rbac.authorization.k8s.io

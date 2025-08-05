@@ -136,22 +136,24 @@ The security policies are automatically deployed by the main `mip-infrastructure
 
 ### How It Works
 
-1. **Federation Policies**: `federation-network-policies` ApplicationSet auto-discovers federations and creates individual network policy applications for each
-2. **Common Policies**: `common-network-policies` Application deploys policies to all common namespaces
+1. **Security AppProject**: `mip-argo-project-security` provides dedicated permissions for network policy management
+2. **Federation Policies**: `federation-network-policies` ApplicationSet auto-discovers federations and creates individual network policy applications for each
+3. **Common Policies**: `common-network-policies` ApplicationSet deploys policies to all common namespaces
 
 ### Manual Deployment
 
 If needed, you can deploy manually:
 
 ```bash
-# Deploy the ApplicationSet and Application
-kubectl apply -f common/security/nepol.yaml
+# Deploy the ApplicationSets
+kubectl apply -f common/security/netpol.yaml
 
-# Sync the applications
-argocd app sync federation-network-policies
+# Sync the applications (security project must exist first)
+argocd app sync mip-argo-project-security-app
+argocd app sync federation-network-policies  
 argocd app sync common-network-policies
 
-# Check auto-generated federation applications
+# Check auto-generated applications
 argocd app list | grep netpol-
 ```
 
