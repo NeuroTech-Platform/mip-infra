@@ -11,10 +11,10 @@ spec:
     - git@github.com:NeuroTech-Platform/mip-deployments.git
   destinations:
     # Allow deployment to federation namespaces for network policies
-    - namespace: 'federation-*'
+    - namespace: federation-*
       server: https://kubernetes.default.svc
     # Allow deployment to common namespaces for network policies  
-    - namespace: 'mip-common-*'
+    - namespace: mip-common-*
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     # Allow namespace creation for auto-discovered federations
@@ -54,8 +54,8 @@ spec:
     - name: security-operator
       description: Limited access to network security policies
       policies:
-        - p, proj:mip-argo-project-security:security-operator, applications, sync, mip-argo-project-security/*,
-          allow
-        - p, proj:mip-argo-project-security:security-operator, applications, get, mip-argo-project-security/*,
-          allow
-      groups: [argocd-operators] 
+        - p, proj:mip-argo-project-security:security-operator, applications, sync,
+          mip-argo-project-security/*, allow
+        - p, proj:mip-argo-project-security:security-operator, applications, get,
+          mip-argo-project-security/*, allow
+      groups: [argocd-operators]

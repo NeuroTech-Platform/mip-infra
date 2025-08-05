@@ -9,7 +9,8 @@ metadata:
     app.kubernetes.io/managed-by: argocd
     argocd.instance: mip-team
   annotations:
-    argocd.argoproj.io/note: 'Auto-discovers federations and applies network isolation policies'
+    argocd.argoproj.io/note: Auto-discovers federations and applies network isolation
+      policies
 spec:
   generators:
     # Auto-discover federation directories - same pattern as main ApplicationSet
@@ -31,7 +32,8 @@ spec:
   goTemplate: true
   template:
     metadata:
-      name: 'netpol-{{ if contains "local" .path.path }}{{ .path.basename }}-local{{ else }}{{ .path.path | dir | base }}-hybrid{{ end }}'
+      name: netpol-{{ if contains "local" .path.path }}{{ .path.basename }}-local{{
+        else }}{{ .path.path | dir | base }}-hybrid{{ end }}
       labels:
         app.kubernetes.io/part-of: federation-network-policies
         app.kubernetes.io/managed-by: argocd
@@ -44,15 +46,17 @@ spec:
         helm:
           parameters:
             - name: targetNamespace
-              value: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base }}{{ end }}'
+              value: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else
+                }}{{ .path.path | dir | base }}{{ end }}'
             - name: federationType
-              value: '{{ if contains "local" .path.path }}local{{ else }}hybrid{{ end }}'
+              value: '{{ if contains "local" .path.path }}local{{ else }}hybrid{{
+                end }}'
       destination:
         server: '{{ .cluster }}'
-        namespace: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base }}{{ end }}'
+        namespace: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else
+          }}{{ .path.path | dir | base }}{{ end }}'
       syncPolicy:
-        syncOptions: 
-          - ApplyOutOfSyncOnly=true
+        syncOptions: [ApplyOutOfSyncOnly=true]
         automated:
           selfHeal: true
 ---
@@ -66,7 +70,7 @@ metadata:
     app.kubernetes.io/managed-by: argocd
     argocd.instance: mip-team
   annotations:
-    argocd.argoproj.io/note: 'Deploys network isolation policies to common namespaces'
+    argocd.argoproj.io/note: Deploys network isolation policies to common namespaces
 spec:
   generators:
     - list:
@@ -76,7 +80,7 @@ spec:
   goTemplate: true
   template:
     metadata:
-      name: 'netpol-{{ .commonNamespace }}'
+      name: netpol-{{ .commonNamespace }}
       labels:
         app.kubernetes.io/part-of: common-network-policies
         app.kubernetes.io/managed-by: argocd
@@ -94,8 +98,6 @@ spec:
         server: https://kubernetes.default.svc
         namespace: '{{ .commonNamespace }}'
       syncPolicy:
-        syncOptions: 
-          - CreateNamespace=true
-          - ApplyOutOfSyncOnly=true
+        syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
         automated:
           selfHeal: true

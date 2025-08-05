@@ -9,8 +9,7 @@ metadata:
     app.kubernetes.io/part-of: argocd
 rules:
   # Core Kubernetes resources ArgoCD server needs to read
-  - apiGroups:
-      - ""
+  - apiGroups: ['']
     resources:
       - events
       - namespaces
@@ -23,11 +22,8 @@ rules:
       - list
       - watch
   # Pods - ArgoCD needs to delete and patch pods for cleanup and management
-  - apiGroups:
-      - ""
-    resources:
-      - pods
-      - pods/log
+  - apiGroups: ['']
+    resources: [pods, pods/log]
     verbs:
       - get
       - list
@@ -35,13 +31,8 @@ rules:
       - delete
       - patch
   # ArgoCD specific resources - need delete and patch for management
-  - apiGroups:
-      - argoproj.io
-    resources:
-      - applications
-      - applicationsets
-      - appprojects
-      - workflows
+  - apiGroups: [argoproj.io]
+    resources: [applications, applicationsets, appprojects, workflows]
     verbs:
       - get
       - list
@@ -49,10 +40,8 @@ rules:
       - delete
       - patch
   # Batch jobs - ArgoCD needs to create and delete jobs
-  - apiGroups:
-      - batch
-    resources:
-      - jobs
+  - apiGroups: [batch]
+    resources: [jobs]
     verbs:
       - get
       - list
@@ -60,27 +49,14 @@ rules:
       - create
       - delete
   # Apps and extensions
-  - apiGroups:
-      - apps
-    resources:
-      - deployments
-      - replicasets
-      - statefulsets
-      - daemonsets
+  - apiGroups: [apps]
+    resources: [deployments, replicasets, statefulsets, daemonsets]
     verbs:
       - get
       - list
       - watch
       - delete
   # NetworkPolicy and IngressClass management support
-  - apiGroups:
-      - networking.k8s.io
-    resources:
-      - networkpolicies
-      - ingressclasses
-    verbs:
-      - get
-      - list
-      - watch
-      - delete
-      - patch
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies, ingressclasses]
+    verbs: [get, list, watch, delete, patch]

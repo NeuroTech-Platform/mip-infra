@@ -11,4 +11,4 @@ metadata:
     # ArgoCD tracking annotations
     argocd.argoproj.io/tracking-id: nginx-public-ingress:argoproj.io/Application:argocd-mip-team/nginx-public-ingress
 spec:
-  controller: k8s.io/ingress-nginx 
+  controller: k8s.io/ingress-nginx

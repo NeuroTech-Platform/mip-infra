@@ -1,8 +1,3 @@
-# Test application for nginx-public IngressClass
-# Apply this to test that the nginx-public IngressClass is working:
-# kubectl apply -f test-ingress.yaml
-# kubectl get ingress test-nginx-public
-# Test access: curl -H "Host: test.example.com" http://148.187.143.44
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -20,17 +15,17 @@ spec:
         app: test-nginx-public
     spec:
       containers:
-      - name: nginx
-        image: nginx:alpine
-        ports:
-        - containerPort: 80
-        volumeMounts:
-        - name: html
-          mountPath: /usr/share/nginx/html
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html
       volumes:
-      - name: html
-        configMap:
-          name: test-nginx-public-html
+        - name: html
+          configMap:
+            name: test-nginx-public-html
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -62,8 +57,8 @@ spec:
   selector:
     app: test-nginx-public
   ports:
-  - port: 80
-    targetPort: 80
+    - port: 80
+      targetPort: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -77,13 +72,13 @@ metadata:
 spec:
   ingressClassName: nginx-public
   rules:
-  - host: test.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: test-nginx-public
-            port:
-              number: 80
+    - host: test.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: test-nginx-public
+                port:
+                  number: 80

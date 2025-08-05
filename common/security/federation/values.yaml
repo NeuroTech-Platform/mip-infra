@@ -1,18 +1,18 @@
+---
 # Default values for federation network policy templates
 # These are overridden by ApplicationSet parameters
 
 # Target namespace (set by ApplicationSet parameter)
-targetNamespace: ""
+targetNamespace: ''
 
 # Federation type: local or hybrid (set by ApplicationSet parameter)
-federationType: "local"
+federationType: local
 
 # ArgoCD namespace for management access
 argoCDNamespace: argocd-mip-team
 
 # Kubernetes system namespace for DNS
 systemNamespace: kube-system
-
 # Network policy settings
 networkPolicy:
   allowExternalHTTP: true
@@ -21,4 +21,4 @@ networkPolicy:
     allowUDP: true
     allowTCP: true
     port: 53
-  enableDefaultDeny: true 
+  enableDefaultDeny: true

@@ -1,15 +1,15 @@
+---
 # Default values for common network policy templates
 # These are overridden by ApplicationSet parameters
 
 # Target namespace (set by ApplicationSet parameter)
-targetNamespace: ""
+targetNamespace: ''
 
 # ArgoCD namespace for management access
 argoCDNamespace: argocd-mip-team
 
 # Kubernetes system namespace for DNS
 systemNamespace: kube-system
-
 # Federation access control (simplified - no namespace lists needed)
 federationAccess:
   local:
@@ -18,7 +18,6 @@ federationAccess:
   hybrid:
     enabled: false
     allowedCommonNamespaces: []
-
 # Global network policy settings
 networkPolicy:
   allowExternalHTTP: true
@@ -27,4 +26,4 @@ networkPolicy:
     allowUDP: true
     allowTCP: true
     port: 53
-  enableDefaultDeny: true 
+  enableDefaultDeny: true
