@@ -1,0 +1,89 @@
+# Test application for nginx-public IngressClass
+# Apply this to test that the nginx-public IngressClass is working:
+# kubectl apply -f test-ingress.yaml
+# kubectl get ingress test-nginx-public
+# Test access: curl -H "Host: test.example.com" http://148.187.143.44
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-nginx-public
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-nginx-public
+  template:
+    metadata:
+      labels:
+        app: test-nginx-public
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: html
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: html
+        configMap:
+          name: test-nginx-public-html
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-nginx-public-html
+  namespace: default
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>nginx-public Ingress Test</title>
+    </head>
+    <body>
+        <h1>🎉 nginx-public IngressClass Working!</h1>
+        <p>This page is served through the nginx-public IngressClass.</p>
+        <p>Using existing nginx controller with dedicated IP.</p>
+        <p>IP: 148.187.143.44</p>
+        <p>IngressClass: nginx-public</p>
+    </body>
+    </html>
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-nginx-public
+  namespace: default
+spec:
+  selector:
+    app: test-nginx-public
+  ports:
+  - port: 80
+    targetPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-nginx-public
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx-public
+  rules:
+  - host: test.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: test-nginx-public
+            port:
+              number: 80 

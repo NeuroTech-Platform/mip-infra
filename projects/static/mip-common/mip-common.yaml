@@ -41,6 +41,8 @@ spec:
       kind: ValidatingAdmissionWebhook
     - group: admissionregistration.k8s.io
       kind: MutatingAdmissionWebhook
+    - group: networking.k8s.io
+      kind: IngressClass
   namespaceResourceWhitelist:
     - group: argoproj.io
       kind: Application

@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-public-controller
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: nginx-public
+    app.kubernetes.io/component: controller
+  annotations:
+    # MetalLB annotations to ensure we get the specific IP
+    metallb.universe.tf/address-pool: pool-no-auto
+    metallb.universe.tf/allow-shared-ip: "false"
+spec:
+  type: LoadBalancer
+  # Request specific IP from MetalLB pool-no-auto
+  loadBalancerIP: 148.187.143.44
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: http
+    - name: https
+      port: 443
+      protocol: TCP
+      targetPort: https
+  selector:
+    # Point to the existing nginx controller pods
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx 
