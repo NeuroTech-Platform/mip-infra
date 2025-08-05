@@ -52,13 +52,9 @@ spec:
         namespace: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base }}{{ end }}'
       syncPolicy:
         syncOptions: 
-          - CreateNamespace=true
           - ApplyOutOfSyncOnly=true
-          - PrunePropagationPolicy=foreground
-          - PruneLast=true
         automated:
           selfHeal: true
-          prune: true
 ---
 # ApplicationSet for common namespace network policies
 apiVersion: argoproj.io/v1alpha1
@@ -99,10 +95,6 @@ spec:
         namespace: '{{ .commonNamespace }}'
       syncPolicy:
         syncOptions: 
-          - CreateNamespace=true
           - ApplyOutOfSyncOnly=true
-          - PrunePropagationPolicy=foreground
-          - PruneLast=true
         automated:
           selfHeal: true
-          prune: true 

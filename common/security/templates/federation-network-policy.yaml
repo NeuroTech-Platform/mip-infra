@@ -8,8 +8,6 @@ metadata:
     name: {{ .Values.targetNamespace }}
     mip.federation-type: {{ .Values.federationType }}
     app.kubernetes.io/managed-by: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
 ---
 # Namespace isolation policy for {{ .Values.targetNamespace }}
 apiVersion: networking.k8s.io/v1
@@ -23,8 +21,6 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     mip.namespace-type: federation
     mip.federation-type: {{ .Values.federationType }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   podSelector: {}  # Apply to all pods in the namespace
   policyTypes:
@@ -80,8 +76,6 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     mip.namespace-type: federation
     mip.federation-type: {{ .Values.federationType }}
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
 spec:
   podSelector: {}
   policyTypes:

@@ -61,6 +61,13 @@ spec:
         server: '{{.cluster}}'
         namespace: '{{.namespace}}'
       syncPolicy:
-        syncOptions: [CreateNamespace=true]
+        syncOptions: 
+          - CreateNamespace=true
+          - ApplyOutOfSyncOnly=true
+        managedNamespaceMetadata:
+          labels:
+            name: '{{ if contains "federations" .path.path }}{{ if contains "local" .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base }}{{ end }}{{ else }}{{.namespace}}{{ end }}'
+            app.kubernetes.io/managed-by: argocd
+            '{{ if contains "federations" .path.path }}mip.federation-type{{ else }}mip.namespace-type{{ end }}': '{{ if contains "federations" .path.path }}{{ if contains "local" .path.path }}local{{ else }}hybrid{{ end }}{{ else }}common{{ end }}'
         automated:
           selfHeal: true
