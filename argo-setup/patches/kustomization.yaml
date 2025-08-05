@@ -16,3 +16,4 @@ patchesStrategicMerge:
   - patch-argocd-redis-ha-statefulset.yaml
   - patch-argocd-cmd-params-cm.yaml
   - patch-argocd-cm.yaml
+  - patch-argocd-server-extra-read.yaml
