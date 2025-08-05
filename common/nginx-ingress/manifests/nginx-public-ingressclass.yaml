@@ -6,5 +6,9 @@ metadata:
   labels:
     app.kubernetes.io/name: nginx-public
     app.kubernetes.io/component: controller
+    app.kubernetes.io/managed-by: argocd
+  annotations:
+    # ArgoCD tracking annotations
+    argocd.argoproj.io/tracking-id: nginx-public-ingress:argoproj.io/Application:argocd-mip-team/nginx-public-ingress
 spec:
   controller: k8s.io/ingress-nginx 
