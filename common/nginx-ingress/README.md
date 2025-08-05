@@ -79,16 +79,21 @@ spec:
 
 ## Deployment
 
-This is automatically deployed by the `mip-infrastructure` ApplicationSet when it discovers the `common/nginx-ingress` directory.
+This follows the same pattern as other common applications (like datacatalog):
+
+1. **Discovery**: The `mip-infrastructure` ApplicationSet discovers the `common/nginx-ingress` directory
+2. **Application Creation**: It applies the `nginx-ingress.yaml` Application manifest
+3. **Project Assignment**: The Application explicitly uses `mip-argo-project-common` project (which has the required permissions)
+4. **Resource Deployment**: The Application deploys manifests from `common/nginx-ingress/manifests/`
 
 ### Manual Deployment
 
 ```bash
 # Sync the application
-argocd app sync nginx-public-ingress-class
+argocd app sync nginx-public-ingress
 
 # Check the application status
-argocd app get nginx-public-ingress-class
+argocd app get nginx-public-ingress
 ```
 
 ## Verification
