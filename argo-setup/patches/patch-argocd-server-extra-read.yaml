@@ -72,11 +72,12 @@ rules:
       - list
       - watch
       - delete
-  # NetworkPolicy management support
+  # NetworkPolicy and IngressClass management support
   - apiGroups:
       - networking.k8s.io
     resources:
       - networkpolicies
+      - ingressclasses
     verbs:
       - get
       - list

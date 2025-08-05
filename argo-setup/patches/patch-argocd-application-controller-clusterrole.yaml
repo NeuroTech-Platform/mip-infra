@@ -37,7 +37,7 @@ rules:
     resources: [prometheusrules, servicemonitors]
     verbs: [create, delete, patch, update]
   - apiGroups: [networking.k8s.io]
-    resources: [ingresses, networkpolicies]
+    resources: [ingresses, ingressclasses, networkpolicies]
     verbs: [create, delete, patch, update]
   - apiGroups: [rbac.authorization.k8s.io]
     resources: [clusterrolebindings, clusterroles, rolebindings, roles]

@@ -9,8 +9,7 @@ metadata:
     app.kubernetes.io/component: controller
   annotations:
     # MetalLB annotations to ensure we get the specific IP
-    metallb.universe.tf/address-pool: pool-no-auto
-    metallb.universe.tf/allow-shared-ip: "false"
+    metallb.universe.tf/ip-allocated-from-pool: pool-no-auto
 spec:
   type: LoadBalancer
   # Request specific IP from MetalLB pool-no-auto

@@ -32,7 +32,7 @@ metadata:
   name: nginx-public-controller
   namespace: ingress-nginx
   annotations:
-    metallb.universe.tf/address-pool: pool-no-auto
+    metallb.universe.tf/ip-allocated-from-pool: pool-no-auto
 spec:
   type: LoadBalancer
   loadBalancerIP: 148.187.143.44
@@ -128,7 +128,37 @@ kubectl apply -f common/nginx-ingress/test-ingress.yaml
 curl -H "Host: test.example.com" http://148.187.143.44
 ```
 
+## Prerequisites
+
+This implementation requires ArgoCD to have permissions to create IngressClass resources.
+
 ## Troubleshooting
+
+### Permission Denied for IngressClass
+
+If you get `ingressclasses.networking.k8s.io is forbidden` or `Resource not found in cluster`:
+
+1. Verify ArgoCD has proper IngressClass permissions:
+   ```bash
+   # Check application controller (needs create permissions)
+   kubectl get clusterrole argocd-application-controller -o yaml | grep -A 3 networking.k8s.io
+   
+   # Check server (needs read permissions)  
+   kubectl get clusterrole argocd-server -o yaml | grep -A 3 networking.k8s.io
+   ```
+   Both should show `ingressclasses` in the resources list under `networking.k8s.io`.
+
+2. Apply the updated ArgoCD patches:
+   ```bash
+   cd argo-setup
+   kustomize build patches | kubectl apply -f -
+   ```
+
+3. Restart ArgoCD components to pick up new permissions:
+   ```bash
+   kubectl rollout restart statefulset/argocd-application-controller -n argocd-mip-team
+   kubectl rollout restart deployment/argocd-server -n argocd-mip-team
+   ```
 
 ### IP Not Assigned
 
