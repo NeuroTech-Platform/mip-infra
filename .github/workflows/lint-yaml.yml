@@ -27,7 +27,7 @@ jobs:
         run: |
           # The yamlfix command will automatically find and apply fixes to any YAML files.
           # It uses the `.yamllint.yml` configuration file for its rules.
-          yamlfix --exclude "./projects/templates/federation/templates/appproject.yaml" .
+          yamlfix --exclude "./projects/templates/federation/templates/appproject.yaml" --exclude "security/federation/templates/federation-network-policy.yaml" .
 
           # Check if there are any changes to commit.
           # `git status --porcelain` will be empty if there are no changes.
