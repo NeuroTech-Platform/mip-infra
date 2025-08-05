@@ -12,6 +12,12 @@ spec:
   destinations:
     - namespace: argocd-mip-team
       server: https://kubernetes.default.svc
+    # Allow network policy deployment to federation namespaces
+    - namespace: 'federation-*'
+      server: https://kubernetes.default.svc
+    # Allow network policy deployment to common namespaces
+    - namespace: 'mip-common-*'
+      server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: argoproj.io
       kind: ApplicationSet

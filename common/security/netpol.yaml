@@ -31,7 +31,7 @@ spec:
   goTemplate: true
   template:
     metadata:
-      name: 'netpol-{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}'
+      name: 'netpol-{{ if contains "local" .path.path }}{{ .path.basename }}-local{{ else }}{{ .path.path | dir | base }}-hybrid{{ end }}'
       labels:
         app.kubernetes.io/part-of: federation-network-policies
         app.kubernetes.io/managed-by: argocd
@@ -39,40 +39,62 @@ spec:
       project: mip-argo-project-infrastructure
       source:
         repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-        targetRevision: main
+        targetRevision: dev/initial_setup_for_mip_deployments
         path: common/security/templates
         helm:
           parameters:
             - name: targetNamespace
-              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
+              value: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base }}{{ end }}'
             - name: federationType
               value: '{{ if contains "local" .path.path }}local{{ else }}hybrid{{ end }}'
       destination:
         server: '{{ .cluster }}'
-        namespace: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
+        namespace: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base }}{{ end }}'
       syncPolicy:
         syncOptions: [CreateNamespace=true]
         automated:
           selfHeal: true
 ---
-# Static application for common namespace network policies
+# ApplicationSet for common namespace network policies
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
   name: common-network-policies
   namespace: argocd-mip-team
-  finalizers: [resources-finalizer.argocd.argoproj.io]
+  labels:
+    app.kubernetes.io/managed-by: argocd
+    argocd.instance: mip-team
+  annotations:
+    argocd.argoproj.io/note: 'Deploys network isolation policies to common namespaces'
 spec:
-  project: mip-argo-project-infrastructure
-  source:
-    repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-    targetRevision: main
-    path: common/security/common-templates
-    helm:
-      valueFiles: [values.yaml]
-  destination:
-    server: https://kubernetes.default.svc
-  syncPolicy:
-    syncOptions: [CreateNamespace=true]
-    automated:
-      selfHeal: true 
+  generators:
+    - list:
+        elements:
+          - commonNamespace: mip-common-datacatalog
+          - commonNamespace: mip-common-security
+  goTemplate: true
+  template:
+    metadata:
+      name: 'netpol-{{ .commonNamespace }}'
+      labels:
+        app.kubernetes.io/part-of: common-network-policies
+        app.kubernetes.io/managed-by: argocd
+    spec:
+      project: mip-argo-project-infrastructure
+      source:
+        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        targetRevision: dev/initial_setup_for_mip_deployments
+        path: common/security/common-templates
+        helm:
+          parameters:
+            - name: targetNamespace
+              value: '{{ .commonNamespace }}'
+            - name: commonNamespaces
+              value: '["{{ .commonNamespace }}"]'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{ .commonNamespace }}'
+      syncPolicy:
+        syncOptions: [CreateNamespace=true]
+        automated:
+          selfHeal: true 
