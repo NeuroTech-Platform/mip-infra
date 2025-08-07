@@ -25,6 +25,8 @@ spec:
     # This will be overridden by the federation-specific kustomize patch
     namespace: placeholder-namespace
   syncPolicy:
-    syncOptions: [CreateNamespace=true]
+    syncOptions: 
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
     automated:
       selfHeal: true

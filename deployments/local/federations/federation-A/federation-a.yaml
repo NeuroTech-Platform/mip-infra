@@ -4,9 +4,6 @@ kind: Application
 metadata:
   name: federation-a
   namespace: argocd-mip-team
-  annotations:
-    argocd.argoproj.io/sync-options: ServerSideApply=true
-    argocd.argoproj.io/webhook-timeout: '30'
 spec:
   project: mip-argo-project-federations
   source:
@@ -17,6 +14,8 @@ spec:
     server: https://kubernetes.default.svc
     namespace: argocd-mip-team
   syncPolicy:
-    syncOptions: [CreateNamespace=true]
+    syncOptions: 
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
     automated:
       selfHeal: true

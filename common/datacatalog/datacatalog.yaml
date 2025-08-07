@@ -20,6 +20,8 @@ spec:
     server: https://kubernetes.default.svc
     namespace: mip-common-datacatalog
   syncPolicy:
-    syncOptions: [CreateNamespace=true]
+    syncOptions: 
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
     automated:
       selfHeal: true
