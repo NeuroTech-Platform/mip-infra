@@ -4,9 +4,12 @@ kind: Service
 metadata:
   name: nginx-public-controller
   namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: nginx-public
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/managed-by: argocd
   annotations:
     # MetalLB annotations to ensure we get the specific IP
-    metallb.universe.tf/ip-allocated-from-pool: pool-no-auto
     metallb.io/address-pool: pool-no-auto
 spec:
   type: LoadBalancer
@@ -24,6 +27,6 @@ spec:
       targetPort: https
   selector:
     # Point to the existing nginx controller pods
+    app.kubernetes.io/name: nginx-public
+    app.kubernetes.io/instance: nginx-public
     app.kubernetes.io/component: controller
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/name: ingress-nginx
