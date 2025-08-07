@@ -51,7 +51,7 @@ metadata:
 spec:
   ingressClassName: nginx-public  # Use the custom class
   rules:
-  - host: mip-epilepsy.mip-tds.chuv.cscs.ch
+  - host: subdomain.example.com
     http:
       paths:
       - path: /
@@ -63,7 +63,7 @@ spec:
               number: 80
   tls:
   - hosts:
-    - mip-epilepsy.mip-tds.chuv.cscs.ch
+    - subdomain.example.com
     secretName: mip-frontend-tls
 ```
 
