@@ -11,7 +11,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["configmaps", "endpoints", "nodes", "pods", "secrets", "services", "namespaces"]
-  verbs: ["list", "watch"]
+  verbs: ["list", "watch", "get"]
 - apiGroups: [""]
   resources: ["nodes"]
   verbs: ["get"]
