@@ -14,7 +14,7 @@ datacatalogDb:
   storage: 5Gi
 backend:
   dbUrl: jdbc:postgresql://datacatalogdb:5432/datacatalog
-  publicHost: datacatalogue.mip.ebrains.eu.chuv.cscs.ch
+  publicHost: datacatalogue.mip.ebrains.eu
   dqtUrl: http://data-quality-tool:8000
   authentication: 'true'
   keycloak:
