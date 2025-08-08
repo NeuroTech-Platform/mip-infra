@@ -82,6 +82,31 @@ spec:
     - protocol: TCP
       port: 443
 ---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-acme-http01-from-ingress
+  namespace: {{.Values.targetNamespace}}
+  labels:
+    app.kubernetes.io/name: federation-network-policy
+    app.kubernetes.io/instance: {{.Release.Name}}
+    app.kubernetes.io/managed-by: {{.Release.Service}}
+    mip.namespace-type: federation
+    mip.federation-type: {{.Values.federationType}}
+spec:
+  podSelector:
+    matchLabels:
+      acme.cert-manager.io/http01-solver: "true"
+  policyTypes: ["Ingress"]
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8089
+---
 # Default deny policy for {{.Values.targetNamespace}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
