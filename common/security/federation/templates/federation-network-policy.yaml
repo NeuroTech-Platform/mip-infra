@@ -54,6 +54,34 @@ spec:
         - protocol: TCP
           port: 80
 ---
+# Policy to allow talking from ingress to frontend services
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-ingress-nginx-http-https-to-frontend
+  namespace: {{.Values.targetNamespace}}
+  labels:
+    app.kubernetes.io/name: federation-network-policy
+    app.kubernetes.io/instance: {{.Release.Name}}
+    app.kubernetes.io/managed-by: {{.Release.Service}}
+    mip.namespace-type: federation
+    mip.federation-type: {{.Values.federationType}}
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  policyTypes: ["Ingress"]
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: http
+    - protocol: TCP
+      port: https
+---
 # Default deny policy for {{.Values.targetNamespace}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
