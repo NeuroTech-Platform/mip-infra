@@ -10,7 +10,7 @@ mip:
   PUBLIC_PROTOCOL: http
 datacatalog:
   PROTOCOL: https
-  HOST: datacatalog.mip.chuv.cscs.ch
+  HOST: datacatalogue.mip.ebrains.eu.chuv.cscs.ch
 keycloak:
   AUTHENTICATION: 1
   INTERNAL_AUTH: 0
