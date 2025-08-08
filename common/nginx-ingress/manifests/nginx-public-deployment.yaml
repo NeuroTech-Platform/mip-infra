@@ -22,7 +22,6 @@ spec:
         app.kubernetes.io/instance: nginx-public
         app.kubernetes.io/component: controller
         app.kubernetes.io/managed-by: argocd
-        app.kubernetes.io/version: 1.13.0
     spec:
       serviceAccountName: ingress-nginx
       containers:
@@ -54,10 +53,6 @@ spec:
             httpGet: {path: /healthz, port: 10254}
             initialDelaySeconds: 10
             periodSeconds: 10
-          resources:
-            requests:
-              cpu: 100m
-              memory: 90Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities: {add: ["NET_BIND_SERVICE"], drop: ["ALL"]}

@@ -280,12 +280,14 @@ git checkout main
 1.  Deploy Argo as described in [argo-setup/README.md](argo-setup/README.md), then follow the steps below.
 
 
-2. Add the deployment repository to Argo CD:
+2. Add the deployment repository to Argo CD and apply the RBACs:
 
 ```bash
 argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
   --ssh-private-key-path ./argocd-remote-key \
   --name mip-infra
+
+kubectl apply -f base/mip-infrastructure/rbac/nginx-public-rbac.yaml
 ```
 
 
