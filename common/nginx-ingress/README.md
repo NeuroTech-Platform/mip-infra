@@ -1,18 +1,77 @@
-# NGINX Public IngressClass
+# nginx-ingress (public edge)
 
-This module creates a custom IngressClass named `nginx-public` that uses your existing nginx ingress controller with a dedicated IP address from MetalLB.
+This kustomize set deploys a **second ingress-nginx controller** that publishes a **different LoadBalancer IP** from your default one.
 
-## Overview
+- Ingresses using your existing class (e.g. `nginx`) keep **IP A**.  
+- Ingresses using **`nginx-public`** get **IP B**.
 
-This deployment creates:
+It’s portable (cloud LBs or MetalLB), avoids filesystem mounts, and uses unique flags/labels so it won’t clash with anything else.
 
-- **Custom IngressClass**: `nginx-public` that points to your existing nginx controller
-- **Dedicated LoadBalancer Service**: Uses IP `148.187.143.44` from MetalLB `pool-no-auto`
-- **No Additional Controller**: Leverages your existing KaaS provider's nginx controller
+> **RBAC is applied separately:**  
+> `base/mip-infrastructure/rbac/nginx-public-rbac.yaml`  
+> Apply that before (or together with) this kustomization.
 
-## What Gets Created
+---
 
-### 1. IngressClass Resource
+## What’s here
+
+```
+common/nginx-ingress/
+├── kustomization.yaml
+├── nginx-public-deployment.yaml      # second ingress-nginx controller
+├── nginx-public-ingressclass.yaml    # IngressClass: nginx-public
+└── nginx-public-service.yaml         # LoadBalancer Service for IP B
+```
+
+The RBAC this controller needs lives outside this folder:  
+`base/mip-infrastructure/rbac/nginx-public-rbac.yaml`.
+
+---
+
+## How “two IPs” is achieved
+
+This controller uses **unique identifiers**:
+
+- `--controller-class = k8s.io/ingress-nginx-public`
+- `--ingress-class   = nginx-public`
+- `--election-id     = ingress-nginx-public-leader`
+- `--publish-service = <namespace>/nginx-public-controller` (the Service that owns **IP B**)
+
+Ingresses that set `spec.ingressClassName: nginx-public` will be reconciled here and get **IP B** in their `.status.loadBalancer`.
+
+---
+
+## Quick start
+
+```bash
+# 1) Apply RBAC (required)
+kubectl apply -f base/mip-infrastructure/rbac/nginx-public-rbac.yaml
+
+# 2) Apply this kustomization
+kubectl apply -k common/nginx-ingress/
+
+# 3) Watch the controller come up
+kubectl -n ingress-nginx get pods -l app.kubernetes.io/instance=nginx-public -w
+
+# 4) Verify the public LoadBalancer IP (IP B)
+kubectl -n ingress-nginx get svc nginx-public-controller -o wide
+
+# 5) Point an Ingress at it
+# Preferred: set the spec field in the manifest:
+# spec:
+#   ingressClassName: nginx-public
+# OR patch an existing object (compat annotation):
+kubectl -n <ns> annotate ingress/<name> kubernetes.io/ingress.class=nginx-public --overwrite
+
+# 6) Confirm the Ingress shows IP B
+kubectl get ingress -A -o wide | grep nginx-public
+```
+
+---
+
+## Files (overview)
+
+### `nginx-public-ingressclass.yaml`
 
 ```yaml
 apiVersion: networking.k8s.io/v1
@@ -20,10 +79,10 @@ kind: IngressClass
 metadata:
   name: nginx-public
 spec:
-  controller: k8s.io/ingress-nginx
+  controller: k8s.io/ingress-nginx-public   # must match --controller-class
 ```
 
-### 2. LoadBalancer Service
+### `nginx-public-service.yaml` (your **public** LoadBalancer)
 
 ```yaml
 apiVersion: v1
@@ -31,186 +90,171 @@ kind: Service
 metadata:
   name: nginx-public-controller
   namespace: ingress-nginx
-  annotations:
-    metallb.universe.tf/ip-allocated-from-pool: pool-no-auto
+  # Add provider-specific annotations here as needed.
+  # For MetalLB you can request a pool or pin an IP:
+  # annotations:
+  #   metallb.io/address-pool: pool-no-auto
 spec:
   type: LoadBalancer
-  loadBalancerIP: 148.187.143.44
-  # Selects your existing nginx controller pods
+  externalTrafficPolicy: Local
+  # MetalLB only: pin a specific address if desired
+  # loadBalancerIP: 203.0.113.44
+  ports:
+    - { name: http,  port: 80,  targetPort: http }
+    - { name: https, port: 443, targetPort: https }
+  selector:
+    app.kubernetes.io/name: nginx-public
+    app.kubernetes.io/instance: nginx-public
+    app.kubernetes.io/component: controller
 ```
 
-## Usage
-
-Use the `nginx-public` IngressClass in your applications:
+### `nginx-public-deployment.yaml` (the second controller)
 
 ```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: mip-epilepsy
+  name: nginx-public-controller
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/name: nginx-public
+    app.kubernetes.io/instance: nginx-public
+    app.kubernetes.io/component: controller
 spec:
-  ingressClassName: nginx-public  # Use the custom class
-  rules:
-  - host: subdomain.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: frontend-service
-            port:
-              number: 80
-  tls:
-  - hosts:
-    - subdomain.example.com
-    secretName: mip-frontend-tls
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: nginx-public
+      app.kubernetes.io/instance: nginx-public
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: nginx-public
+        app.kubernetes.io/instance: nginx-public
+        app.kubernetes.io/component: controller
+    spec:
+      serviceAccountName: nginx-public
+      containers:
+        - name: controller
+          image: registry.k8s.io/ingress-nginx/controller:v1.13.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - /nginx-ingress-controller
+            - --publish-service=$(POD_NAMESPACE)/nginx-public-controller
+            - --election-id=ingress-nginx-public-leader
+            - --controller-class=k8s.io/ingress-nginx-public
+            - --ingress-class=nginx-public
+            - --watch-ingress-without-class=false
+          env:
+            - name: POD_NAMESPACE
+              valueFrom: { fieldRef: { fieldPath: metadata.namespace } }
+            - name: POD_NAME
+              valueFrom: { fieldRef: { fieldPath: metadata.name } }
+          ports:
+            - { name: http,  containerPort: 80 }
+            - { name: https, containerPort: 443 }
+          livenessProbe:
+            httpGet: { path: /healthz, port: 10254 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet: { path: /healthz, port: 10254 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      nodeSelector:
+        kubernetes.io/os: linux
+      terminationGracePeriodSeconds: 300
 ```
 
-## How It Works
+> If you rename the IngressClass or Service, update these flags to match:  
+> `--ingress-class=<your-class>` • `--controller-class=<your-controller-string>` • `--publish-service=$(POD_NAMESPACE)/<your-service>` • and the `IngressClass.spec.controller`.
 
-1. **Existing Controller**: Your KaaS provider's nginx controller continues to run normally
-2. **Custom IngressClass**: `nginx-public` tells Kubernetes to use the same controller
-3. **Dedicated Service**: Routes traffic from `148.187.143.44` to your existing nginx pods
-4. **Traffic Flow**: 
-   ```
-   148.187.143.44 → nginx-public-controller service → existing nginx pods → your applications
-   ```
+---
 
-## Deployment
+## Configuration notes
 
-This follows the same pattern as other common applications (like datacatalog):
+### Service (LoadBalancer)
 
-1. **Discovery**: The `mip-infrastructure` ApplicationSet discovers the `common/nginx-ingress` directory
-2. **Application Creation**: It applies the `nginx-ingress.yaml` Application manifest
-3. **Project Assignment**: The Application explicitly uses `mip-argo-project-common` project (which has the required permissions)
-4. **Resource Deployment**: The Application deploys manifests from `common/nginx-ingress/manifests/`
+- **MetalLB**: keep `loadBalancerIP` to pin a fixed address or use `metallb.io/address-pool` to allocate from a pool.  
+- **Cloud LBs**: remove `loadBalancerIP` and add provider annotations if required.
 
-### Manual Deployment
+### Optional: PROXY protocol
+
+If your LB/MetalLB speaks PROXY protocol:
+
+- annotate the **Service** (MetalLB): `metallb.io/proxy-protocol: "true"`  
+- set `use-proxy-protocol: "true"` in a controller ConfigMap (if you add one)
+
+---
+
+## RBAC (applied separately)
+
+This controller needs RBAC that allows it to:
+
+- read common cluster objects (services, endpoints, pods, namespaces, …)
+- **update/patch** `ingresses/status`
+- leader election using a **Lease** in `ingress-nginx`:
+  - **must** be able to **create** `leases` (cannot restrict `create` by name)
+  - may then `get/list/watch/update/patch` the specific lease object (e.g., `ingress-nginx-public-leader`)
+
+Apply from:  
+`base/mip-infrastructure/rbac/nginx-public-rbac.yaml`
+
+---
+
+## Verification & troubleshooting
 
 ```bash
-# Sync the application
-argocd app sync nginx-public-ingress
+# Controller is running
+kubectl -n ingress-nginx get pods -l app.kubernetes.io/instance=nginx-public
 
-# Check the application status
-argocd app get nginx-public-ingress
+# Lease exists & updates
+kubectl -n ingress-nginx get lease | grep ingress-nginx-public-leader
+kubectl -n ingress-nginx logs deploy/nginx-public-controller --tail=100 | egrep -i 'acquired lease|became leader'
+
+# Publish-service has an external IP (IP B)
+kubectl -n ingress-nginx get svc nginx-public-controller -o jsonpath='{.status.loadBalancer.ingress[0].ip}{"\n"}'
+
+# Ingresses using nginx-public show IP B
+kubectl get ingress -A -o wide | grep nginx-public
 ```
 
-## Verification
+**Common pitfalls**
 
-After deployment, verify the setup:
+- `forbidden ... cannot create resource "leases"` → RBAC must grant `create` on `leases` (unscoped by name) **and** specific-name access for `get/list/watch/update/patch`.
+- `Ignoring ingress because of error while validating ingress class` → `IngressClass.spec.controller` must equal the controller’s `--controller-class`.
+- Wrong IP in Ingress status → ensure `--publish-service` points at `ingress-nginx/nginx-public-controller` and that Service has an external IP.
+- Service never gets an IP → check LB annotations/quotas (cloud) or MetalLB pools/selectors.
+- TLS warnings “Using default certificate” → expected until the referenced TLS Secrets match your hostnames.
+
+---
+
+## Upgrading the controller
+
+Edit the image tag in `nginx-public-deployment.yaml`:
+
+```yaml
+image: registry.k8s.io/ingress-nginx/controller:v1.13.0
+```
+
+Apply and watch the rollout:
 
 ```bash
-# Check the IngressClass was created
-kubectl get ingressclass nginx-public
-
-# Verify the LoadBalancer service has the correct IP
-kubectl get svc -n ingress-nginx nginx-public-controller
-
-# Check that the service points to existing nginx pods
-kubectl describe svc -n ingress-nginx nginx-public-controller
+kubectl apply -k common/nginx-ingress/
+kubectl -n ingress-nginx rollout status deploy/nginx-public-controller
 ```
 
-Expected output:
-- IngressClass `nginx-public` exists with controller `k8s.io/ingress-nginx`
-- Service `nginx-public-controller` has external IP `148.187.143.44`
-- Service endpoints point to your existing nginx controller pods
+---
 
-## Testing
+## FAQ
 
-Apply the test application:
+**Do I need a second controller for two different status IPs?**  
+Yes. One controller can serve multiple classes, but it only publishes one IP (from its `--publish-service`).
 
-```bash
-# Apply the test manifests (uses nginx-public IngressClass)
-kubectl apply -f common/nginx-ingress/test-ingress.yaml
+**Do I need a ConfigMap?**  
+Only if you want to tweak NGINX settings. You can add  
+`--configmap=$(POD_NAMESPACE)/nginx-public-controller` later and create a matching ConfigMap.
 
-# Test access
-curl -H "Host: test.example.com" http://148.187.143.44
-```
-
-## Prerequisites
-
-This implementation requires ArgoCD to have permissions to create IngressClass resources.
-
-## Troubleshooting
-
-### Permission Denied for IngressClass
-
-If you get `ingressclasses.networking.k8s.io is forbidden` or `Resource not found in cluster`:
-
-1. Verify ArgoCD has proper IngressClass permissions:
-   ```bash
-   # Check application controller (needs create permissions)
-   kubectl get clusterrole argocd-application-controller -o yaml | grep -A 3 networking.k8s.io
-   
-   # Check server (needs read permissions)  
-   kubectl get clusterrole argocd-server -o yaml | grep -A 3 networking.k8s.io
-   ```
-   Both should show `ingressclasses` in the resources list under `networking.k8s.io`.
-
-2. Apply the updated ArgoCD patches:
-   ```bash
-   cd argo-setup
-   kustomize build patches | kubectl apply -f -
-   ```
-
-3. Restart ArgoCD components to pick up new permissions:
-   ```bash
-   kubectl rollout restart statefulset/argocd-application-controller -n argocd-mip-team
-   kubectl rollout restart deployment/argocd-server -n argocd-mip-team
-   ```
-
-### IP Not Assigned
-
-If the LoadBalancer service shows `<pending>`:
-
-1. Check MetalLB logs:
-   ```bash
-   kubectl logs -n metallb-system deployment/controller
-   ```
-
-2. Verify the IP pool:
-   ```bash
-   kubectl get ipaddresspools.metallb.io -n metallb-system pool-no-auto -o yaml
-   ```
-
-3. Ensure IP is not in use:
-   ```bash
-   kubectl get svc --all-namespaces -o wide | grep 148.187.143.44
-   ```
-
-### IngressClass Not Working
-
-1. Verify your existing nginx controller supports multiple ingress classes:
-   ```bash
-   kubectl logs -n ingress-nginx deployment/ingress-nginx-controller | grep "ingress class"
-   ```
-
-2. Check that the controller is watching for the nginx-public class:
-   ```bash
-   kubectl describe ingressclass nginx-public
-   ```
-
-### Service Not Routing Traffic
-
-1. Check service endpoints:
-   ```bash
-   kubectl get endpoints -n ingress-nginx nginx-public-controller
-   ```
-
-2. Verify the selector matches your nginx pods:
-   ```bash
-   kubectl get pods -n ingress-nginx --show-labels
-   ```
-
-## Integration with Existing Infrastructure
-
-This solution:
-- **Preserves** your KaaS provider's nginx setup
-- **Adds** a new traffic entry point with dedicated IP
-- **Shares** the same nginx controller between both services
-- **Allows** you to choose different IPs for different applications
-
-Choose the IngressClass based on your requirements:
-- **Default nginx** (KaaS): Use for general applications
-- **nginx-public**: Use for applications that need the specific IP `148.187.143.44` 
+**Can I enable PROXY protocol?**  
+Yes—see “Optional: PROXY protocol” above.
