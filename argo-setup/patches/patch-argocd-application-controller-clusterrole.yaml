@@ -40,7 +40,7 @@ rules:
     resources: ["clusterissuers"]
     verbs: ["create", "delete", "patch", "update"]
   - apiGroups: [networking.k8s.io]
-    resources: [ingresses, networkpolicies]
+    resources: [ingresses, networkpolicies, ingressclasses]
     verbs: [create, delete, patch, update]
   - apiGroups: [rbac.authorization.k8s.io]
     resources: [clusterrolebindings, clusterroles, rolebindings, roles]
