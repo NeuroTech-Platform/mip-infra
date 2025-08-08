@@ -23,7 +23,7 @@ spec:
         app.kubernetes.io/component: controller
         app.kubernetes.io/managed-by: argocd
     spec:
-      serviceAccountName: ingress-nginx
+      serviceAccountName: nginx-public
       containers:
         - name: controller
           image: registry.k8s.io/ingress-nginx/controller:v1.13.0
