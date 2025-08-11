@@ -9,7 +9,7 @@ mip:
   LINK: direct
   EXTERNAL_PROTOCOL: http
   PUBLIC_PROTOCOL: http
-  PUBLIC_HOST: mip-frontend.mip-tds.chuv.cscs.ch
+  PUBLIC_HOST: datacatalogue.mip.ebrains.eu
 keycloak:
   AUTHENTICATION: 1
   INTERNAL_AUTH: 0
@@ -19,4 +19,4 @@ keycloak:
   SSL_REQUIRED: external
 frontend:
   DATACATALOG_PROTOCOL: http
-  DATACATALOG_HOST: datacatalog.mip-tds.chuv.cscs.ch
+  DATACATALOG_HOST: datacatalogue.mip.ebrains.eu

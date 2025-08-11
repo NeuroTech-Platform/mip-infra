@@ -1,0 +1,153 @@
+---
+# Namespace isolation policy for {{ .Values.targetNamespace }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mip-common-namespace-isolation
+  namespace: {{ .Values.targetNamespace }}
+  labels:
+    app.kubernetes.io/name: common-network-policies
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    mip.namespace-type: common
+spec:
+  podSelector: {}  # Apply to all pods in the namespace
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # Allow traffic from pods within the same namespace (compatible with all K8s distros)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.targetNamespace }}
+    {{- if .Values.federationAccess.local.enabled }}
+    {{- if has .Values.targetNamespace .Values.federationAccess.local.allowedCommonNamespaces }}
+    # Allow traffic from local federation namespaces (when enabled)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              mip.federation-type: local
+    {{- end }}
+    {{- end }}
+    {{- if .Values.federationAccess.hybrid.enabled }}
+    {{- if has .Values.targetNamespace .Values.federationAccess.hybrid.allowedCommonNamespaces }}
+    # Allow traffic from hybrid federation namespaces (when enabled)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              mip.federation-type: hybrid
+    {{- end }}
+    {{- end }}
+    # Allow traffic from ArgoCD for management (compatible with all K8s distros)
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.argoCDNamespace }}
+  egress:
+    # Allow traffic to pods within the same namespace (compatible with all K8s distros)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.targetNamespace }}
+    # Allow DNS queries to kube-system (compatible with all K8s distros)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.systemNamespace }}
+      ports:
+        {{- if .Values.networkPolicy.dns.allowUDP }}
+        - protocol: UDP
+          port: {{ .Values.networkPolicy.dns.port }}
+        {{- end }}
+        {{- if .Values.networkPolicy.dns.allowTCP }}
+        - protocol: TCP
+          port: {{ .Values.networkPolicy.dns.port }}
+        {{- end }}
+    {{- if .Values.networkPolicy.allowExternalHTTPS }}
+    # Allow HTTPS egress for external dependencies
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 443
+    {{- end }}
+    {{- if .Values.networkPolicy.allowExternalHTTP }}
+    # Allow HTTP egress for external dependencies
+    - to: []
+      ports:
+        - protocol: TCP
+          port: 80
+    {{- end }}
+{{- if .Values.networkPolicy.enableDefaultDeny }}
+{{- if eq .Values.targetNamespace "mip-common-datacatalog" }}
+---
+# Policy to allow talking from ingress to frontend services
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-from-ingress-nginx-http-https-to-frontend
+  namespace: {{.Values.targetNamespace}}
+  labels:
+    app.kubernetes.io/name: common-network-policies
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    mip.namespace-type: common
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  policyTypes: ["Ingress"]
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 80
+    - protocol: TCP
+      port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-acme-http01-from-ingress
+  namespace: {{.Values.targetNamespace}}
+  labels:
+    app.kubernetes.io/name: common-network-policies
+    app.kubernetes.io/instance: {{ $.Release.Name }}
+    app.kubernetes.io/managed-by: {{ $.Release.Service }}
+    mip.namespace-type: common
+spec:
+  podSelector:
+    matchLabels:
+      acme.cert-manager.io/http01-solver: "true"
+  policyTypes: ["Ingress"]
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: ingress-nginx
+    ports:
+    - protocol: TCP
+      port: 8089
+
+{{- end }}
+---
+# Default deny policy for {{ .Values.targetNamespace }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mip-common-default-deny
+  namespace: {{ .Values.targetNamespace }}
+  labels:
+    app.kubernetes.io/name: common-network-policies
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    mip.namespace-type: common
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+{{- end }} 

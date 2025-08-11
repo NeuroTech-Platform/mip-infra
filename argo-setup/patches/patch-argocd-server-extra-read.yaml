@@ -1,0 +1,65 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: argocd-server
+  labels:
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: argocd-server
+    app.kubernetes.io/part-of: argocd
+rules:
+  # Core Kubernetes resources ArgoCD server needs to read
+  - apiGroups: ['']
+    resources:
+      - events
+      - namespaces
+      - configmaps
+      - secrets
+      - services
+      - persistentvolumeclaims
+    verbs:
+      - get
+      - list
+      - watch
+  # Pods - ArgoCD needs to delete and patch pods for cleanup and management
+  - apiGroups: ['']
+    resources: [pods, pods/log]
+    verbs:
+      - get
+      - list
+      - watch
+      - delete
+      - patch
+  # ArgoCD specific resources - need delete and patch for management
+  - apiGroups: [argoproj.io]
+    resources: [applications, applicationsets, appprojects, workflows]
+    verbs:
+      - get
+      - list
+      - watch
+      - delete
+      - patch
+  # Batch jobs - ArgoCD needs to create and delete jobs
+  - apiGroups: [batch]
+    resources: [jobs]
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - delete
+  # Apps and extensions
+  - apiGroups: [apps]
+    resources: [deployments, replicasets, statefulsets, daemonsets]
+    verbs:
+      - get
+      - list
+      - watch
+      - delete
+  # NetworkPolicy and IngressClass management support
+  - apiGroups: [networking.k8s.io]
+    resources: [networkpolicies, ingresses, ingressclasses]
+    verbs: [get, list, watch, delete, patch]
+  - apiGroups: [cert-manager.io]
+    resources: [clusterissuers]
+    verbs: [create, delete, patch, update]

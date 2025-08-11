@@ -1,0 +1,32 @@
+---
+# clusterissuer-letsencrypt-public-staging.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-public-staging
+spec:
+  acme:
+    email: crn.neurodigital@chuv.ch
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-public-staging-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx-public
+---
+# clusterissuer-letsencrypt-public.yaml
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-public
+spec:
+  acme:
+    email: crn.neurodigital@chuv.ch
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-public-account-key
+    solvers:
+      - http01:
+          ingress:
+            ingressClassName: nginx-public

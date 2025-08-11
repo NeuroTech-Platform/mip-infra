@@ -1,1 +1,4 @@
-
+---
+managed_cluster: true
+log_level: INFO
+localnodes: 1

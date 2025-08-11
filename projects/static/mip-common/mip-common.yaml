@@ -41,6 +41,10 @@ spec:
       kind: ValidatingAdmissionWebhook
     - group: admissionregistration.k8s.io
       kind: MutatingAdmissionWebhook
+    - group: networking.k8s.io
+      kind: IngressClass
+    - group: cert-manager.io
+      kind: ClusterIssuer
   namespaceResourceWhitelist:
     - group: argoproj.io
       kind: Application

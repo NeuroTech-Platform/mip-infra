@@ -16,7 +16,7 @@ spec:
         valueFiles:
           - values.yaml
           - $values/deployments/shared-apps/exareme2/values.yaml
-    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+    - repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
       targetRevision: main
       ref: values
   destination:
@@ -24,6 +24,6 @@ spec:
     # This will be overridden by the federation-specific kustomize patch
     namespace: placeholder-namespace
   syncPolicy:
-    syncOptions: [CreateNamespace=true]
+    syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
     automated:
       selfHeal: true

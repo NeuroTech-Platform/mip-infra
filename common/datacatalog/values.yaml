@@ -10,15 +10,11 @@ dqt:
 datacatalogDb:
   storageClassName: ceph-corbo-cephfs
   image: postgres:15
-  password: test
   db: datacatalog
-  user: postgres
   storage: 5Gi
 backend:
   dbUrl: jdbc:postgresql://datacatalogdb:5432/datacatalog
-  dbUser: postgres
-  dbPassword: test
-  publicHost: datacatalog.mip-tds.chuv.cscs.ch
+  publicHost: datacatalogue.mip.ebrains.eu
   dqtUrl: http://data-quality-tool:8000
   authentication: 'true'
   keycloak:

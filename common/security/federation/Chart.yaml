@@ -1,0 +1,11 @@
+---
+apiVersion: v2
+name: federation-network-policy
+description: Network isolation policy for a single federation namespace (auto-discovered)
+type: application
+version: 1.0.0
+appVersion: 1.0.0
+keywords: [security, networkpolicy, federation, isolation]
+sources: [https://github.com/NeuroTech-Platform/mip-infra]
+maintainers:
+  - name: MIP Team

@@ -10,7 +10,7 @@ metadata:
     argocd.instance: mip-team
   annotations:
     argocd.argoproj.io/note: 'Manages static AppProjects: mip-federations, mip-shared-apps,
-      mip-common'
+      mip-common, mip-security'
 spec:
   generators:
     - list:
@@ -21,6 +21,8 @@ spec:
             fileName: mip-shared-apps
           - projectName: mip-argo-project-common
             fileName: mip-common
+          - projectName: mip-argo-project-security
+            fileName: mip-security
   goTemplate: true
   template:
     metadata:
@@ -64,9 +66,12 @@ spec:
   goTemplate: true
   template:
     metadata:
-      name: argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}-app
+      name: argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower
+        }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}-app
       labels:
-        app.kubernetes.io/part-of: argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}
+        app.kubernetes.io/part-of: argo-project-{{ if contains "local" .path.path }}{{
+          .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower
+          }}-hybrid{{ end }}
         app.kubernetes.io/managed-by: argocd
     spec:
       project: mip-argo-project-infrastructure
@@ -78,7 +83,8 @@ spec:
           valueFiles: [values.yaml]
           parameters:
             - name: federationName
-              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
+              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower
+                }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
       destination:
         server: https://kubernetes.default.svc
         namespace: argocd-mip-team

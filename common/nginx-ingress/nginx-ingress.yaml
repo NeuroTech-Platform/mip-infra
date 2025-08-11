@@ -1,0 +1,20 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-public-ingress
+  namespace: argocd-mip-team  # This is the namespace where Argo CD runs
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: mip-argo-project-common
+  source:
+    repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+    targetRevision: main
+    path: common/nginx-ingress/manifests
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ingress-nginx
+  syncPolicy:
+    syncOptions: [CreateNamespace=true, Replace=true]
+    automated:
+      selfHeal: true

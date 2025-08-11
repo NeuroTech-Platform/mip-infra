@@ -34,6 +34,8 @@ spec:
               directories:
                 # Cluster-wide applications (not for use for the federations, use deployments/shared-apps instead and not declared here)
                 - path: common/datacatalog
+                - path: common/nginx-ingress
+                - path: common/security
           - list:
               elements:
                 - cluster: https://kubernetes.default.svc
@@ -44,12 +46,17 @@ spec:
   template:
     metadata:
       # Create a unique name based on both path and cluster
-      name: '{{ index .path.segments 0 }}-{{ .path.basename | lower }}'
+      name: '{{ .path.path | replace "/" "-" | lower | replace "federations-federation-" "" }}'
       labels:
         app.kubernetes.io/part-of: '{{ .clusterName }}.cluster-{{ index .path.segments
-          0 }}-{{ if contains "federations" .path.path }}{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}{{ else }}{{ .path.basename | lower }}{{ end }}'
+          0 }}-{{ if contains "federations" .path.path }}{{ if contains "local" .path.path
+          }}{{ .path.basename | lower }}-local{{ else }}{{ .path.path | dir | base
+          | lower }}-hybrid{{ end }}{{ else }}{{ .path.basename | lower }}{{ end }}'
     spec:
-      project: '{{ if contains "federations" .path.path }}mip-argo-project-{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}{{ else }}mip-argo-project-infrastructure{{ end }}'
+      project: '{{ if contains "federations" .path.path }}mip-argo-project-{{ if contains
+        "local" .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path |
+        dir | base | lower }}{{ end }}{{ else }}mip-argo-project-infrastructure{{
+        end }}'
       source:
         repoURL: '{{ .repoURL }}'
         targetRevision: main
@@ -60,6 +67,15 @@ spec:
         server: '{{.cluster}}'
         namespace: '{{.namespace}}'
       syncPolicy:
-        syncOptions: [CreateNamespace=true]
+        syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
+        managedNamespaceMetadata:
+          labels:
+            name: '{{ if contains "federations" .path.path }}{{ if contains "local"
+              .path.path }}{{ .path.basename }}{{ else }}{{ .path.path | dir | base
+              }}{{ end }}{{ else }}{{.namespace}}{{ end }}'
+            app.kubernetes.io/managed-by: argocd
+            '{{ if contains "federations" .path.path }}mip.federation-type{{ else }}mip.namespace-type{{ end }}': '{{ if contains "federations" .path.path }}{{
+              if contains "local" .path.path }}local{{ else }}hybrid{{ end }}{{ else
+              }}common{{ end }}'
         automated:
           selfHeal: true
