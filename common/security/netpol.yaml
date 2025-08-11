@@ -18,7 +18,7 @@ spec:
         generators:
           - git:
               repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
-              revision: dev/initial_setup_for_mip_deployments
+              revision: main
               directories:
                 # Local federations
                 - path: deployments/local/federations/*
@@ -41,7 +41,7 @@ spec:
       project: mip-argo-project-security
       source:
         repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-        targetRevision: dev/initial_setup_for_mip_deployments
+        targetRevision: main
         path: common/security/federation
         helm:
           parameters:
@@ -88,7 +88,7 @@ spec:
       project: mip-argo-project-security
       source:
         repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-        targetRevision: dev/initial_setup_for_mip_deployments
+        targetRevision: main
         path: common/security/common-templates
         helm:
           parameters:

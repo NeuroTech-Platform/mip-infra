@@ -9,7 +9,7 @@ spec:
   project: mip-argo-project-common
   source:
     repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-    targetRevision: dev/initial_setup_for_mip_deployments
+    targetRevision: main
     path: common/nginx-ingress/manifests
   destination:
     server: https://kubernetes.default.svc

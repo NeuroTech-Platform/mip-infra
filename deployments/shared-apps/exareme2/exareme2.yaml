@@ -17,7 +17,7 @@ spec:
           - values.yaml
           - $values/deployments/shared-apps/exareme2/values.yaml
     - repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
-      targetRevision: dev/initial_setup_for_mip_deployments
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc
