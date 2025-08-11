@@ -13,7 +13,7 @@ metadata:
     metallb.io/address-pool: pool-no-auto
 spec:
   type: LoadBalancer
-  externalTrafficPolicy: Local   # preserves client IPs
+  externalTrafficPolicy: Local  # preserves client IPs
   # Request specific IP from MetalLB pool-no-auto
   loadBalancerIP: 148.187.143.44
   ports:

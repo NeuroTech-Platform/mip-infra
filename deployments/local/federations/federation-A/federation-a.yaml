@@ -14,8 +14,6 @@ spec:
     server: https://kubernetes.default.svc
     namespace: argocd-mip-team
   syncPolicy:
-    syncOptions: 
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
+    syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
     automated:
       selfHeal: true

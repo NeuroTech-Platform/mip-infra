@@ -21,8 +21,6 @@ spec:
       targetRevision: main
       ref: values
   syncPolicy:
-    syncOptions: 
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
+    syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
     automated:
       selfHeal: true
