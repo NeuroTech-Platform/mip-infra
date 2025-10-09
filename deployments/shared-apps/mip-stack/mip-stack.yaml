@@ -11,7 +11,7 @@ metadata:
 spec:
   sources:
     - repoURL: https://github.com/HBPMedical/mip-deployment
-      targetRevision: managed_cluster
+      targetRevision: f1bfbc187fb798c5ec9f4a12d600e503a08c7df5
       path: kubernetes
       helm:
         valueFiles:

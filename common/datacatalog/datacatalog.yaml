@@ -9,7 +9,7 @@ spec:
   project: mip-argo-project-common
   sources:
     - repoURL: https://github.com/madgik/datacatalog
-      targetRevision: managed_cluster
+      targetRevision: 7fe98e03aa2bb7d6e0510a638572030d651687cf # 1.2.0
       path: kubernetes
       helm:
         valueFiles: [values.yaml, $values/common/datacatalog/values.yaml]
