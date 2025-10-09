@@ -10,7 +10,7 @@ metadata:
 spec:
   sources:
     - repoURL: https://github.com/madgik/exareme2
-      targetRevision: ca41df798873c3b161f9f8710ecd7a56fbe67520 # 0.27.0
+      targetRevision: ca41df798873c3b161f9f8710ecd7a56fbe67520  # 0.27.0
       path: kubernetes
       helm:
         valueFiles:
