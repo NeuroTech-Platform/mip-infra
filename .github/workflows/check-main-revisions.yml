@@ -36,11 +36,19 @@ jobs:
               # Extract line numbers where non-main targetRevision appears
               while read -r LINE; do
                 LINE_NUM=$(echo "$LINE" | grep -oE "^[^:]+:[0-9]+" | cut -d':' -f2)
-                # Check surrounding lines for repoURL (5 lines before and after)
-                CONTEXT=$(sed -n "$((LINE_NUM-5)),$((LINE_NUM+5))p" "$YAML_FILE" 2>/dev/null || true)
+                # Look backwards from targetRevision to find the closest repoURL
+                # Search up to 10 lines before the targetRevision
+                REPO_LINE=""
+                for ((i=LINE_NUM-1; i>=LINE_NUM-10 && i>=1; i--)); do
+                  REPO_CHECK=$(sed -n "${i}p" "$YAML_FILE" 2>/dev/null | grep "repoURL:" || true)
+                  if [[ -n "$REPO_CHECK" ]]; then
+                    REPO_LINE="$REPO_CHECK"
+                    break
+                  fi
+                done
                 
-                # Only add to problems if associated with our repo
-                if echo "$CONTEXT" | grep -q "repoURL:.*NeuroTech-Platform/mip-infra"; then
+                # Only add to problems if the closest repoURL is our repo
+                if echo "$REPO_LINE" | grep -q "NeuroTech-Platform/mip-infra"; then
                   TARGET_REVISION_PROBLEMS+="$LINE"$'\n'
                 fi
               done <<< "$TARGET_REVISIONS"
