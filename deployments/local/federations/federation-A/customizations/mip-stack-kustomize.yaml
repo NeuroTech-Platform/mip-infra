@@ -22,7 +22,7 @@ spec:
     namespace: federation-a
   sources:
     - repoURL: https://github.com/HBPMedical/mip-deployment
-      targetRevision: f1bfbc187fb798c5ec9f4a12d600e503a08c7df5
+      targetRevision: 22eab7571c7d08bae959c9f0b4aede3e31a90852
       path: kubernetes
       helm:
         valueFiles:
