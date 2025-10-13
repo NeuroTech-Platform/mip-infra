@@ -543,14 +543,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ## Acknowledgements
 
-This repository is part of a research project that has received funding from the Swiss State Secretariat for Education, Research and Innovation (SERI) as part of the Horizon Europe project “EBRAINS 2.0”, contract number 23.00638.
-
-<img src="https://raw.githubusercontent.com/NeuroTech-Platform/domains-management-tf/refs/heads/main/images/funder_picture.png" alt="SERI funding logo" style="max-width: 700px; width: 100%; height: auto;"/>
-
-This repository is also part of a research that has received funding from the European Union’s Horizon Europe project “EBRAINS 2.0” under Grant agreement ID: 101147319.
-
-<img src="https://upload.wikimedia.org/wikipedia/commons/b/b7/Flag_of_Europe.svg" alt="European Union emblem" width="120">
-
+This project has received funding from the European Union’s Horizon 2020 Framework Partnership Agreement No. 650003 (Human Brain Project), and from the European Union’s Horizon Europe research and innovation programme under Grant Agreement No. 101147319 (EBRAINS 2.0). This work was also supported by the Swiss State Secretariat for Education, Research and Innovation (SERI) under contract No. 23.00638 (EBRAINS 2.0).
 
 ## 🔗 Related Projects
 
