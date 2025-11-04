@@ -1,4 +1,6 @@
 ---
+exareme2_images:
+  version: 0.28.0
 managed_cluster: true
 log_level: INFO
 localnodes: 1
