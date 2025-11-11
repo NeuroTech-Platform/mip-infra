@@ -46,15 +46,15 @@ spec:
         helm:
           parameters:
             - name: targetNamespace
-              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else
-                }}{{ .path.path | dir | base | lower }}{{ end }}'
+              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower
+                }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
             - name: federationType
               value: '{{ if contains "local" .path.path }}local{{ else }}hybrid{{
                 end }}'
       destination:
         server: '{{ .cluster }}'
-        namespace: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else
-          }}{{ .path.path | dir | base | lower }}{{ end }}'
+        namespace: '{{ if contains "local" .path.path }}{{ .path.basename | lower
+          }}{{ else }}{{ .path.path | dir | base | lower }}{{ end }}'
       syncPolicy:
         syncOptions: [ApplyOutOfSyncOnly=true]
         automated:

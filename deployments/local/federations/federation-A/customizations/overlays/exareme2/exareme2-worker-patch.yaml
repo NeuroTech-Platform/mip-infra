@@ -19,10 +19,9 @@ spec:
               memory: 700Mi
           env:
             - name: WORKER_THREADS
-              value: "8"
+              value: '8'
             - name: MAX_MEMORY_PERCENT
-              value: "40"
+              value: '40'
       # nodeSelector:
       #   federation: federation-a
       #   workload-type: compute-intensive
-

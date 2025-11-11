@@ -10,9 +10,8 @@ metadata:
   name: federation-a-exareme2-overlay
   namespace: argocd-mip-team
   annotations:
-    argocd.argoproj.io/sync-wave: "2"  # Deploy after the base app
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
+    argocd.argoproj.io/sync-wave: '2'  # Deploy after the base app
+  finalizers: [resources-finalizer.argocd.argoproj.io]
 spec:
   project: mip-argo-project-federation-a
   destination:
@@ -30,4 +29,3 @@ spec:
     automated:
       selfHeal: true
       prune: true
-

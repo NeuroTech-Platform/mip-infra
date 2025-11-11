@@ -71,8 +71,8 @@ spec:
         managedNamespaceMetadata:
           labels:
             name: '{{ if contains "federations" .path.path }}{{ if contains "local"
-              .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir | base
-              | lower }}{{ end }}{{ else }}{{.namespace}}{{ end }}'
+              .path.path }}{{ .path.basename | lower }}{{ else }}{{ .path.path | dir
+              | base | lower }}{{ end }}{{ else }}{{.namespace}}{{ end }}'
             app.kubernetes.io/managed-by: argocd
             '{{ if contains "federations" .path.path }}mip.federation-type{{ else }}mip.namespace-type{{ end }}': '{{ if contains "federations" .path.path }}{{
               if contains "local" .path.path }}local{{ else }}hybrid{{ end }}{{ else

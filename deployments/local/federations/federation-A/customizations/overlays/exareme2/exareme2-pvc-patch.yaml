@@ -9,6 +9,4 @@ spec:
     requests:
       storage: 500Gi  # Much larger than default
   storageClassName: ceph-corbo-cephfs
-  accessModes:
-    - ReadWriteMany
-
+  accessModes: [ReadWriteMany]

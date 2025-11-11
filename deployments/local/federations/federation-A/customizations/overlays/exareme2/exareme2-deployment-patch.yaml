@@ -18,30 +18,30 @@ spec:
         - name: exareme2  # Must match the container name from Helm chart
           resources:
             limits:
-              cpu: "4"
+              cpu: '4'
               memory: 8Gi
             requests:
-              cpu: "1"
+              cpu: '1'
               memory: 2Gi
           env:
             # These will be added/merged with existing env vars
             - name: FEDERATION_ID
-              value: "federation-a"
+              value: federation-a
             - name: MAX_CONCURRENT_QUERIES
-              value: "50"
+              value: '50'
             - name: QUERY_TIMEOUT
-              value: "3600"
+              value: '3600'
             - name: WORKERS_PER_NODE
-              value: "8"
+              value: '8'
       # These will be merged with the deployment
       nodeSelector:
         federation: federation-a
         workload-type: compute-intensive
       tolerations:
-        - key: "dedicated"
-          operator: "Equal"
-          value: "federation-a"
-          effect: "NoSchedule"
+        - key: dedicated
+          operator: Equal
+          value: federation-a
+          effect: NoSchedule
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -51,7 +51,5 @@ spec:
                   matchExpressions:
                     - key: app
                       operator: In
-                      values:
-                        - exareme2
+                      values: [exareme2]
                 topologyKey: kubernetes.io/hostname
-
