@@ -1,0 +1,18 @@
+---
+# Patch ConfigMap with federation-specific configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: exareme2-config
+data:
+  # Custom configuration not exposed in Helm values
+  federation.id: "federation-a"
+  federation.region: "eu-west-1"
+  max.concurrent.queries: "50"
+  query.timeout.seconds: "3600"
+  worker.threads.per.node: "8"
+  database.connection.pool.size: "100"
+  cache.size.mb: "4096"
+  enable.advanced.analytics: "true"
+  log.level: "DEBUG"
+

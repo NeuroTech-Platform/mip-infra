@@ -1,0 +1,14 @@
+---
+# Patch for PersistentVolumeClaim - increase storage size
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: exareme2-data
+spec:
+  resources:
+    requests:
+      storage: 500Gi  # Much larger than default
+  storageClassName: ceph-corbo-cephfs
+  accessModes:
+    - ReadWriteMany
+

@@ -13,6 +13,12 @@ resources:
   - ../../../../deployments/shared-apps/exareme2
   - ../../../../deployments/shared-apps/mip-stack
 patches:
-# Only need to customize the namespace and values now, not the name
+# JSON patches to customize project, namespace, and add federation-specific values
   - path: customizations/exareme2-kustomize.yaml
+    target:
+      kind: Application
+      name: exareme2
   - path: customizations/mip-stack-kustomize.yaml
+    target:
+      kind: Application
+      name: mip-stack

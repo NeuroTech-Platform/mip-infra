@@ -32,8 +32,8 @@ spec:
   goTemplate: true
   template:
     metadata:
-      name: netpol-{{ if contains "local" .path.path }}{{ .path.basename }}-local{{
-        else }}{{ .path.path | dir | base }}-hybrid{{ end }}
+      name: netpol-{{ if contains "local" .path.path }}{{ .path.basename | lower }}-local{{
+        else }}{{ .path.path | dir | base | lower }}-hybrid{{ end }}
       labels:
         app.kubernetes.io/part-of: federation-network-policies
         app.kubernetes.io/managed-by: argocd
@@ -46,15 +46,15 @@ spec:
         helm:
           parameters:
             - name: targetNamespace
-              value: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else
-                }}{{ .path.path | dir | base }}{{ end }}'
+              value: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else
+                }}{{ .path.path | dir | base | lower }}{{ end }}'
             - name: federationType
               value: '{{ if contains "local" .path.path }}local{{ else }}hybrid{{
                 end }}'
       destination:
         server: '{{ .cluster }}'
-        namespace: '{{ if contains "local" .path.path }}{{ .path.basename }}{{ else
-          }}{{ .path.path | dir | base }}{{ end }}'
+        namespace: '{{ if contains "local" .path.path }}{{ .path.basename | lower }}{{ else
+          }}{{ .path.path | dir | base | lower }}{{ end }}'
       syncPolicy:
         syncOptions: [ApplyOutOfSyncOnly=true]
         automated:
