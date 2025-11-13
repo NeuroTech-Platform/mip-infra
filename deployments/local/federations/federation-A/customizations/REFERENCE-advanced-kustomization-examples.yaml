@@ -34,7 +34,6 @@ namespace: federation-a
 # Strategic merge patches - will merge with existing resources
 patchesStrategicMerge:
   - exareme2-deployment-patch.yaml
-  - exareme2-worker-patch.yaml
   - exareme2-service-patch.yaml
   - exareme2-pvc-patch.yaml
   - exareme2-configmap-patch.yaml

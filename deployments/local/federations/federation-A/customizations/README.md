@@ -200,7 +200,6 @@ spec:
 | File | Patches | Purpose |
 |------|---------|---------|
 | `exareme2-deployment-patch.yaml` | Deployment/exareme2 | CPU, RAM, env vars, node selectors |
-| `exareme2-worker-patch.yaml` | Deployment/exareme2-worker | Worker resources and scaling |
 | `exareme2-service-patch.yaml` | Service/exareme2 | LoadBalancer, annotations |
 | `exareme2-pvc-patch.yaml` | PVC/exareme2-data | Storage size |
 | `exareme2-configmap-patch.yaml` | ConfigMap/exareme2-config | Custom configuration |
@@ -291,7 +290,6 @@ federation-A/
 │           ├── kustomization.yaml       ← ACTIVE kustomization
 │           ├── README.md                ← Overlay documentation
 │           ├── exareme2-deployment-patch.yaml
-│           ├── exareme2-worker-patch.yaml
 │           ├── exareme2-service-patch.yaml
 │           ├── exareme2-pvc-patch.yaml
 │           ├── exareme2-configmap-patch.yaml

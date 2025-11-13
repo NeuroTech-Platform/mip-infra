@@ -12,6 +12,8 @@ commonLabels:
 resources:
   - ../../../../deployments/shared-apps/exareme2
   - ../../../../deployments/shared-apps/mip-stack
+  - customizations/exareme2-overlay-app.yaml
+
 patches:
 # JSON patches to customize project, namespace, and add federation-specific values
   - path: customizations/exareme2-kustomize.yaml

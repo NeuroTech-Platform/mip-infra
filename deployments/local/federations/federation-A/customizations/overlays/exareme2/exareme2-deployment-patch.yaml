@@ -12,7 +12,13 @@ metadata:
       {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"name":"exareme2","namespace":"federation-a"}}
 spec:
   replicas: 5  # Override replica count
+  selector:
+    matchLabels:
+      app: exareme2
   template:
+    metadata:
+      labels:
+        app: exareme2    
     spec:
       containers:
         - name: exareme2  # Must match the container name from Helm chart

@@ -3,47 +3,32 @@
 ## Current Status
 
 ### 🟢 Active Patches (Currently Applied)
-- ✅ `exareme2-worker-patch.yaml` - **TESTING**
+- ✅ `exareme2-pvc-patch.yaml` - **TESTING**
 
 ### 📚 Example Patches (Commented Out)
 These are kept as examples and can be enabled when needed:
 - 📄 `exareme2-deployment-patch.yaml` - Main deployment resources, env vars, affinity
 - 📄 `exareme2-service-patch.yaml` - LoadBalancer configuration
-- 📄 `exareme2-pvc-patch.yaml` - Storage size increase (500Gi)
 - 📄 `exareme2-configmap-patch.yaml` - Custom configuration
 - 📄 `exareme2-hpa.yaml` - Horizontal Pod Autoscaler (5-20 replicas)
 
 ## What's Being Applied
 
-### exareme2-worker-patch.yaml (ACTIVE)
+### exareme2-pvc-patch.yaml (ACTIVE)
 
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: exareme2-worker
+  name: csv-data-exareme2-localworker-0
   namespace: federation-a
 spec:
-  replicas: 5                     # Scale to 5 workers
-  template:
-    spec:
-      containers:
-        - name: worker
-          resources:
-            limits:
-              cpu: 1500m          # 1.5 CPU cores max
-              memory: 3Gi         # 3GB RAM max
-            requests:
-              cpu: 400m           # 0.4 CPU cores reserved
-              memory: 700Mi       # 700MB RAM reserved
-          env:
-            - name: WORKER_THREADS
-              value: "8"
-            - name: MAX_MEMORY_PERCENT
-              value: "40"
-      nodeSelector:
-        federation: federation-a
-        workload-type: compute-intensive
+  resources:
+    requests:
+      storage: 8Gi  # Increase from 4Gi to 8Gi
+  storageClassName: ceph-corbo-cephfs
+  accessModes:
+    - ReadWriteMany
 ```
 
 **Effect**: When the Helm chart creates the `exareme2-worker` Deployment, this overlay will:
@@ -61,7 +46,7 @@ To enable any of the example patches, edit `kustomization.yaml`:
 resources:
   # Uncomment the patches you want to enable:
   - exareme2-deployment-patch.yaml  # ← Remove the # to enable
-  - exareme2-worker-patch.yaml
+  - exareme2-pvc-patch.yaml
   # - exareme2-service-patch.yaml   # ← Still commented out
 ```
 
@@ -80,15 +65,8 @@ kubectl kustomize . | kubectl apply --dry-run=client -f -
 
 ## Common Scenarios
 
-### Scenario 1: Scale workers up/down
-Edit `exareme2-worker-patch.yaml`:
-```yaml
-spec:
-  replicas: 10  # Change from 5 to 10
-```
-
-### Scenario 2: Adjust worker resources
-Edit `exareme2-worker-patch.yaml`:
+### Scenario 1: Adjust worker resources
+On a patch that does not use statefulsets (immutable), edit resources in this way:
 ```yaml
 resources:
   limits:
@@ -96,21 +74,21 @@ resources:
     memory: 4Gi   # Increase from 3Gi to 4GB
 ```
 
-### Scenario 3: Enable autoscaling for main deployment
+### Scenario 2: Enable autoscaling for main deployment
 Uncomment in `kustomization.yaml`:
 ```yaml
 resources:
   - exareme2-hpa.yaml  # Enables autoscaling 5-20 replicas
 ```
 
-### Scenario 4: Change service to LoadBalancer
+### Scenario 3: Change service to LoadBalancer
 Uncomment in `kustomization.yaml`:
 ```yaml
 resources:
   - exareme2-service-patch.yaml  # Changes to LoadBalancer
 ```
 
-### Scenario 5: Increase storage
+### Scenario 4: Increase storage
 Uncomment in `kustomization.yaml`:
 ```yaml
 resources:
@@ -151,11 +129,8 @@ Base Worker Deployment
       ↓
 Server-Side Apply Merge
       ↓
-exareme2-worker-patch.yaml
-   replicas: 5            ← OVERRIDES
-   resources: 1.5CPU/3Gi  ← OVERRIDES
-   env: custom vars       ← ADDS
-   nodeSelector: ...      ← ADDS
+exareme2-pvc-patch.yaml
+   storage: 8Gi            ← OVERRIDES
       ↓
 Final Worker Deployment in K8s
    ✅ 5 replicas
@@ -179,7 +154,7 @@ To remove all overlays:
 ```yaml
 # In kustomization.yaml, comment out all resources:
 resources:
-  # - exareme2-worker-patch.yaml
+  # - exarexareme2-pvc-patch.yaml
 ```
 
 Or delete the overlay application:

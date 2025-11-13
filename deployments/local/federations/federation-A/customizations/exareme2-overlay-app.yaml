@@ -7,7 +7,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: federation-a-exareme2-overlay
+  name: exareme2-overlay
   namespace: argocd-mip-team
   annotations:
     argocd.argoproj.io/sync-wave: '2'  # Deploy after the base app
