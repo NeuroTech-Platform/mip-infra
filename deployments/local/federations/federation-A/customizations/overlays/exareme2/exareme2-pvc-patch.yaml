@@ -1,3 +1,4 @@
+---
 # Patch for PersistentVolumeClaim - increase storage size
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -9,5 +10,4 @@ spec:
     requests:
       storage: 8Gi  # Increase from 4Gi to 8Gi
   storageClassName: ceph-corbo-cephfs
-  accessModes:
-    - ReadWriteMany
+  accessModes: [ReadWriteMany]
