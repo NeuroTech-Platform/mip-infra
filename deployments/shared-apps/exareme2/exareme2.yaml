@@ -17,7 +17,7 @@ spec:
         valueFiles:
           - values.yaml
           - $values/deployments/shared-apps/exareme2/values.yaml
-    - repoURL: git@github.com:NeuroTech-Platform/mip-infra.git
+    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
       targetRevision: main
       ref: values
   destination:
