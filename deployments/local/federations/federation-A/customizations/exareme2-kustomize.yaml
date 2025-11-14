@@ -1,26 +1,20 @@
 ---
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: exareme2
-  namespace: argocd-mip-team
-spec:
-  project: mip-argo-project-federation-a
-  destination:
-    namespace: federation-a
-  sources:
-    - repoURL: https://github.com/madgik/exareme2
-      targetRevision: c1d4eb3d9d90edcf868a3a6395cc37b19c934e66  # 0.28.0
-      path: kubernetes
-      helm:
-        valueFiles:
-          - values.yaml
-          - $values/deployments/shared-apps/exareme2/values.yaml
-          - $values/deployments/local/federations/federation-A/customizations/exareme2-values.yaml
-    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-      targetRevision: main
-      ref: values
-  syncPolicy:
-    syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
-    automated:
-      selfHeal: true
+- op: replace
+  path: /spec/project
+  value: mip-argo-project-federation-a
+- op: replace
+  path: /spec/destination/namespace
+  value: federation-a
+- op: add
+  path: /spec/sources/0/helm/valueFiles/-
+  value: $values/deployments/local/federations/federation-A/customizations/exareme2-values.yaml
+# Add ignoreDifferences for fields we'll manage directly in the cluster
+- op: add
+  path: /spec/ignoreDifferences
+  value:
+    - group: apps
+      kind: Deployment
+      name: exareme2
+      jsonPointers:
+        - /spec/replicas  # Allow HPA to manage replicas
+        - /spec/template/spec/containers/0/resources

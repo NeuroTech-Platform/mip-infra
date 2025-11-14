@@ -207,6 +207,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,visualstudiocode,jetbrains+all,vim,helm
-
-# Branch-specific overlays
-overlays/

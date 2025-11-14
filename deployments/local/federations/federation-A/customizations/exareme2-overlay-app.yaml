@@ -1,0 +1,31 @@
+---
+# This is a companion Application that applies Kustomize patches
+# on top of the base exareme2 Helm deployment
+# Deploy this AFTER the main exareme2 application (sync-wave: 2)
+# It is here as sample for users to know how to overlay upstream
+# chart values that are not customizable via values.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: exareme2-overlay
+  namespace: argocd-mip-team
+  annotations:
+    argocd.argoproj.io/sync-wave: '2'  # Deploy after the base app
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: mip-argo-project-federation-a
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: federation-a
+  source:
+    repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    targetRevision: main
+    path: deployments/local/federations/federation-A/customizations/overlays/exareme2
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - ServerSideApply=true  # Use server-side apply for better patching
+    automated:
+      selfHeal: true
+      prune: true

@@ -1,0 +1,61 @@
+---
+# Deployment patch using kubectl apply annotation
+# This will be merged with the existing Deployment via server-side apply
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: exareme2
+  namespace: federation-a
+  annotations:
+    # This tells Kubernetes to merge rather than replace
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"apps/v1","kind":"Deployment","metadata":{"name":"exareme2","namespace":"federation-a"}}
+spec:
+  replicas: 5  # Override replica count
+  selector:
+    matchLabels:
+      app: exareme2
+  template:
+    metadata:
+      labels:
+        app: exareme2
+    spec:
+      containers:
+        - name: exareme2  # Must match the container name from Helm chart
+          resources:
+            limits:
+              cpu: '4'
+              memory: 8Gi
+            requests:
+              cpu: '1'
+              memory: 2Gi
+          env:
+            # These will be added/merged with existing env vars
+            - name: FEDERATION_ID
+              value: federation-a
+            - name: MAX_CONCURRENT_QUERIES
+              value: '50'
+            - name: QUERY_TIMEOUT
+              value: '3600'
+            - name: WORKERS_PER_NODE
+              value: '8'
+      # These will be merged with the deployment
+      nodeSelector:
+        federation: federation-a
+        workload-type: compute-intensive
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: federation-a
+          effect: NoSchedule
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values: [exareme2]
+                topologyKey: kubernetes.io/hostname

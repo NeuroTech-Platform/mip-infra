@@ -1,0 +1,24 @@
+---
+# Patch for exareme2 Service - customize service type and annotations
+apiVersion: v1
+kind: Service
+metadata:
+  name: exareme2
+  annotations:
+    # Add cloud provider specific annotations
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-internal: 'true'
+    # Or for other providers:
+    # cloud.google.com/load-balancer-type: "Internal"
+spec:
+  type: LoadBalancer
+  ports:
+    - name: http
+      port: 9090
+      targetPort: 9090
+      protocol: TCP
+  # Add session affinity if needed
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 3600

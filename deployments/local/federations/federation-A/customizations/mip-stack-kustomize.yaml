@@ -1,38 +1,12 @@
 ---
-# Customizations for mip-stack in federation-a
-# Example
-# replicaCount: 3
-# image:
-#   tag: latest
-# resources:
-#   limits:
-#     cpu: "2"
-#     memory: "2Gi"
-#   requests:
-#     cpu: "1"
-#     memory: "1Gi"
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: mip-stack
-  namespace: argocd-mip-team
-spec:
-  project: mip-argo-project-federation-a
-  destination:
-    namespace: federation-a
-  sources:
-    - repoURL: https://github.com/HBPMedical/mip-deployment
-      targetRevision: f7c64415c48f56bdb25188721d5857a5d79e2547
-      path: kubernetes
-      helm:
-        valueFiles:
-          - values.yaml
-          - $values/deployments/shared-apps/mip-stack/values.yaml
-          - $values/deployments/local/federations/federation-A/customizations/mip-stack-values.yaml
-    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
-      targetRevision: main
-      ref: values
-  syncPolicy:
-    syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
-    automated:
-      selfHeal: true
+# JSON patches for mip-stack in federation-A
+# Version is managed in: shared-apps/mip-stack/mip-stack.yaml
+- op: replace
+  path: /spec/project
+  value: mip-argo-project-federation-a
+- op: replace
+  path: /spec/destination/namespace
+  value: federation-a
+- op: add
+  path: /spec/sources/0/helm/valueFiles/-
+  value: $values/deployments/local/federations/federation-A/customizations/mip-stack-values.yaml

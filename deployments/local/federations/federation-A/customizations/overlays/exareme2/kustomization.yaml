@@ -1,0 +1,26 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: federation-a
+# All resources - will be applied with server-side apply
+# Kubernetes will merge these with existing resources from Helm
+resources:
+  # Main deployment patch - EXAMPLE)
+  # - exareme2-deployment-patch.yaml
+  # Service patch - EXAMPLE
+  # - exareme2-service-patch.yaml
+  # PVC patch
+  - exareme2-pvc-patch.yaml
+  # ConfigMap patch - EXAMPLE
+  # - exareme2-configmap-patch.yaml
+  # HPA (autoscaling) - EXAMPLE
+  # - exareme2-hpa.yaml
+# Add labels to identify these as federation-a customizations
+labels:
+  - pairs:
+      federation: federation-a
+      customization-layer: overlay
+# Add annotations
+commonAnnotations:
+  managed-by: argocd-overlay
+  federation.mip/high-performance: 'true'
