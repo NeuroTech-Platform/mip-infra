@@ -1,9 +1,6 @@
 ---
 namespace: mip-common-datacatalog
 managed_cluster: true
-datacatalog_images:
-  repository: madgik
-  tag: 1.2.0
 dqt:
   flaskEnv: development
   flaskDebug: '1'
