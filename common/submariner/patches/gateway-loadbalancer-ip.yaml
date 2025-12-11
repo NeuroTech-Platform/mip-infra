@@ -8,5 +8,5 @@ metadata:
     metallb.universe.tf/address-pool: pool-no-auto
     metallb.io/address-pool: pool-no-auto
 spec:
-  loadBalancerIP: "148.187.27.151"
+  loadBalancerIP: 148.187.27.151
   externalTrafficPolicy: Local

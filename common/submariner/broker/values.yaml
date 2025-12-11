@@ -1,10 +1,10 @@
+---
 # Values for Public RKE2 Broker
 # These override defaults from official submariner-k8s-broker chart
-
 # Broker-specific settings
 globalnet:
   enabled: false  # Disable if CIDRs don't overlap
-  cidrRange: "242.0.0.0/8"
+  cidrRange: 242.0.0.0/8
   defaultClusterSize: 65536
-#rbac: #TODO: Send PR for this upstream
+# rbac:  # TODO: Send PR for this upstream
 #  create: false  # Managed externally for security

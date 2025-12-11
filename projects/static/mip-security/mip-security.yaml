@@ -48,11 +48,16 @@ spec:
     - name: security-admin
       description: Full access to network security policies
       policies:
-        - p, proj:mip-argo-project-security:security-admin, applications, get, mip-argo-project-security/*, allow
-        - p, proj:mip-argo-project-security:security-admin, applications, create, mip-argo-project-security/*, allow
-        - p, proj:mip-argo-project-security:security-admin, applications, update, mip-argo-project-security/*, allow
-        - p, proj:mip-argo-project-security:security-admin, applications, delete, mip-argo-project-security/*, allow
-        - p, proj:mip-argo-project-security:security-admin, applications, sync, mip-argo-project-security/*, allow
+        - p, proj:mip-argo-project-security:security-admin, applications, get, mip-argo-project-security/*,
+          allow
+        - p, proj:mip-argo-project-security:security-admin, applications, create,
+          mip-argo-project-security/*, allow
+        - p, proj:mip-argo-project-security:security-admin, applications, update,
+          mip-argo-project-security/*, allow
+        - p, proj:mip-argo-project-security:security-admin, applications, delete,
+          mip-argo-project-security/*, allow
+        - p, proj:mip-argo-project-security:security-admin, applications, sync, mip-argo-project-security/*,
+          allow
       groups: [argocd-admins]
     - name: security-operator
       description: Limited access to network security policies

@@ -16,31 +16,31 @@ kind: ClusterRole
 metadata:
   name: submariner-operator
 rules:
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["create", "get", "list", "watch", "update"]
-  - apiGroups: ["apiextensions.k8s.io"]
-    resources: ["customresourcedefinitions"]
-    verbs: ["get", "list", "create", "update", "delete", "watch"]
-  - apiGroups: [""]
-    resources: ["pods", "services", "nodes"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["operator.openshift.io"]
-    resources: ["dnses"]
-    verbs: ["get", "update"]
-  - apiGroups: ["config.openshift.io"]
-    resources: ["networks"]
-    resourceNames: ["cluster"]
-    verbs: ["get"]
-  - apiGroups: ["monitoring.coreos.com"]
-    resources: ["servicemonitors"]
-    verbs: ["get", "create"]
-  - apiGroups: ["apps"]
-    resources: ["daemonsets"]
-    verbs: ["list"]
-  - apiGroups: ["coordination.k8s.io"]
-    resources: ["leases"]
-    verbs: ["create", "get", "list", "update"]
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [create, get, list, watch, update]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, create, update, delete, watch]
+  - apiGroups: ['']
+    resources: [pods, services, nodes]
+    verbs: [get, list, watch]
+  - apiGroups: [operator.openshift.io]
+    resources: [dnses]
+    verbs: [get, update]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    resourceNames: [cluster]
+    verbs: [get]
+  - apiGroups: [monitoring.coreos.com]
+    resources: [servicemonitors]
+    verbs: [get, create]
+  - apiGroups: [apps]
+    resources: [daemonsets]
+    verbs: [list]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [create, get, list, update]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -61,55 +61,54 @@ kind: ClusterRole
 metadata:
   name: submariner-gateway
 rules:
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get", "list", "watch", "create", "update"]
-  - apiGroups: ["apiextensions.k8s.io"]
-    resources: ["customresourcedefinitions"]
-    verbs: ["get", "list", "create", "update", "delete"]
-  - apiGroups: [""]
-    resources: ["pods", "services", "nodes"]
-    verbs: ["get", "list", "watch", "patch", "update"]
-  - apiGroups: ["operator.openshift.io"]
-    resources: ["dnses"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["config.openshift.io"]
-    resources: ["networks"]
-    verbs: ["get", "list"]
-  - apiGroups: ["submariner.io"]
-    resources: ["endpoints", "gateways", "clusters"]
-    verbs: ["create", "get", "list", "watch", "update", "patch", "delete"]
-  - apiGroups: ["submariner.io"]
-    resources: ["gateways/status"]
-    verbs: ["update", "patch"]
-  - apiGroups: ["coordination.k8s.io"]
-    resources: ["leases"]
-    verbs: ["create", "get", "list", "update"]
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [get, list, watch, create, update]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, create, update, delete]
+  - apiGroups: ['']
+    resources: [pods, services, nodes]
+    verbs: [get, list, watch, patch, update]
+  - apiGroups: [operator.openshift.io]
+    resources: [dnses]
+    verbs: [get, list, watch, update]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    verbs: [get, list]
+  - apiGroups: [submariner.io]
+    resources: [endpoints, gateways, clusters]
+    verbs: [create, get, list, watch, update, patch, delete]
+  - apiGroups: [submariner.io]
+    resources: [gateways/status]
+    verbs: [update, patch]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [create, get, list, update]
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: submariner-routeagent
 rules:
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["apiextensions.k8s.io"]
-    resources: ["customresourcedefinitions"]
-    verbs: ["get", "list", "create", "update", "delete"]
-  - apiGroups: [""]
-    resources: ["pods", "services"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["operator.openshift.io"]
-    resources: ["dnses"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["config.openshift.io"]
-    resources: ["networks"]
-    verbs: ["get", "list"]
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [get, list, watch, update]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, create, update, delete]
+  - apiGroups: ['']
+    resources: [pods, services]
+    verbs: [get, list, watch]
+  - apiGroups: [operator.openshift.io]
+    resources: [dnses]
+    verbs: [get, list, watch, update]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    verbs: [get, list]
+  - apiGroups: ['']
+    resources: [nodes]
+    verbs: [get, list, watch, update]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -144,24 +143,24 @@ metadata:
   name: submariner-broker-submariner-k8s-broker-cluster
   namespace: submariner-k8s-broker
 rules:
-  - apiGroups: ["submariner.io"]
-    resources: ["clusters", "endpoints"]
-    verbs: ["create", "get", "list", "watch", "patch", "update", "delete"]
-  - apiGroups: ["submariner.io"]
-    resources: ["brokers"]
-    verbs: ["get", "list"]
-  - apiGroups: ["multicluster.x-k8s.io"]
-    resources: ["serviceimports", "serviceimports/status"]
-    verbs: ["create", "get", "list", "watch", "patch", "update", "delete"]
-  - apiGroups: ["discovery.k8s.io"]
-    resources: ["endpointslices", "endpointslices/restricted"]
-    verbs: ["create", "get", "list", "watch", "patch", "update", "delete"]
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["serviceaccounts"]
-    verbs: ["get", "list"]
+  - apiGroups: [submariner.io]
+    resources: [clusters, endpoints]
+    verbs: [create, get, list, watch, patch, update, delete]
+  - apiGroups: [submariner.io]
+    resources: [brokers]
+    verbs: [get, list]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceimports, serviceimports/status]
+    verbs: [create, get, list, watch, patch, update, delete]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices, endpointslices/restricted]
+    verbs: [create, get, list, watch, patch, update, delete]
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, list, watch]
+  - apiGroups: ['']
+    resources: [serviceaccounts]
+    verbs: [get, list]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -178,7 +177,6 @@ subjects:
     namespace: submariner-k8s-broker
 ---
 # Operator ClusterRoles and ClusterRoleBindings
-
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -197,24 +195,31 @@ kind: ClusterRole
 metadata:
   name: submariner-lighthouse-agent
 rules:
-  - apiGroups: [""]
-    resources: ["services", "namespaces", "endpoints"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["discovery.k8s.io"]
-    resources: ["endpointslices", "endpointslices/restricted"]
-    verbs: ["create", "get", "list", "watch", "update", "delete", "deletecollection"]
-  - apiGroups: ["submariner.io"]
-    resources: ["gateways", "globalingressips"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["multicluster.x-k8s.io"]
-    resources: ["serviceimports", "serviceimports/status"]
-    verbs: ["create", "get", "list", "watch", "update", "delete"]
-  - apiGroups: ["multicluster.x-k8s.io"]
-    resources: ["serviceexports"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["multicluster.x-k8s.io"]
-    resources: ["serviceexports/status"]
-    verbs: ["update"]
+  - apiGroups: ['']
+    resources: [services, namespaces, endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices, endpointslices/restricted]
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+      - deletecollection
+  - apiGroups: [submariner.io]
+    resources: [gateways, globalingressips]
+    verbs: [get, list, watch]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceimports, serviceimports/status]
+    verbs: [create, get, list, watch, update, delete]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceexports]
+    verbs: [get, list, watch]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceexports/status]
+    verbs: [update]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -234,15 +239,15 @@ kind: ClusterRole
 metadata:
   name: submariner-lighthouse-coredns
 rules:
-  - apiGroups: ["discovery.k8s.io"]
-    resources: ["endpointslices"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["submariner.io"]
-    resources: ["gateways", "submariners"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["multicluster.x-k8s.io"]
-    resources: ["serviceimports"]
-    verbs: ["get", "list", "watch"]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices]
+    verbs: [get, list, watch]
+  - apiGroups: [submariner.io]
+    resources: [gateways, submariners]
+    verbs: [get, list, watch]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceimports]
+    verbs: [get, list, watch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -262,29 +267,29 @@ kind: ClusterRole
 metadata:
   name: submariner-routeagent
 rules:
-  - apiGroups: [""]
-    resources: ["pods", "services", "configmaps", "endpoints"]
-    verbs: ["get", "list"]
-  - apiGroups: [""]
-    resources: ["secrets"]
-    resourceNames: ["ovn-cert"]
-    verbs: ["get"]
-  - apiGroups: ["config.openshift.io"]
-    resources: ["networks"]
-    resourceNames: ["cluster"]
-    verbs: ["get"]
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["projectcalico.org"]
-    resources: ["ippools"]
-    verbs: ["get", "create", "delete", "update", "deletecollection"]
-  - apiGroups: ["submariner.io"]
-    resources: ["endpoints"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["submariner.io"]
-    resources: ["routeagents", "gatewayroutes", "nongatewayroutes"]
-    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: ['']
+    resources: [pods, services, configmaps, endpoints]
+    verbs: [get, list]
+  - apiGroups: ['']
+    resources: [secrets]
+    resourceNames: [ovn-cert]
+    verbs: [get]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    resourceNames: [cluster]
+    verbs: [get]
+  - apiGroups: ['']
+    resources: [nodes]
+    verbs: [get, list, watch, update]
+  - apiGroups: [projectcalico.org]
+    resources: [ippools]
+    verbs: [get, create, delete, update, deletecollection]
+  - apiGroups: [submariner.io]
+    resources: [endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [submariner.io]
+    resources: [routeagents, gatewayroutes, nongatewayroutes]
+    verbs: [get, list, watch, create, update, delete]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -306,9 +311,9 @@ metadata:
   name: broker-secret-handler
   namespace: submariner-k8s-broker
 rules:
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get", "create", "update", "patch"]
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, create, update, patch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -330,9 +335,9 @@ metadata:
   name: operator-secret-writer
   namespace: submariner-operator
 rules:
-  - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get", "create", "update", "patch"]
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, create, update, patch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -355,18 +360,22 @@ metadata:
   name: submariner-operator-namespace
   namespace: submariner-operator
 rules:
-  - apiGroups: ["submariner.io"]
-    resources: ["gateways", "servicediscoveries", "submariners", "brokers"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: ["submariner.io"]
-    resources: ["gateways/status", "servicediscoveries/status", "submariners/status", "brokers/status"]
-    verbs: ["get", "update", "patch"]
-  - apiGroups: ["apps"]
-    resources: ["daemonsets", "deployments"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: [""]
-    resources: ["services", "configmaps", "secrets"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [submariner.io]
+    resources: [gateways, servicediscoveries, submariners, brokers]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [submariner.io]
+    resources:
+      - gateways/status
+      - servicediscoveries/status
+      - submariners/status
+      - brokers/status
+    verbs: [get, update, patch]
+  - apiGroups: [apps]
+    resources: [daemonsets, deployments]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: ['']
+    resources: [services, configmaps, secrets]
+    verbs: [get, list, watch, create, update, patch, delete]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

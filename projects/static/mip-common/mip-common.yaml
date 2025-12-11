@@ -103,11 +103,16 @@ spec:
     - name: common-admin
       description: Full access to common resources
       policies:
-        - p, proj:mip-argo-project-common:common-admin, applications, get, mip-argo-project-common/*, allow
-        - p, proj:mip-argo-project-common:common-admin, applications, create, mip-argo-project-common/*, allow
-        - p, proj:mip-argo-project-common:common-admin, applications, update, mip-argo-project-common/*, allow
-        - p, proj:mip-argo-project-common:common-admin, applications, delete, mip-argo-project-common/*, allow
-        - p, proj:mip-argo-project-common:common-admin, applications, sync, mip-argo-project-common/*, allow
+        - p, proj:mip-argo-project-common:common-admin, applications, get, mip-argo-project-common/*,
+          allow
+        - p, proj:mip-argo-project-common:common-admin, applications, create, mip-argo-project-common/*,
+          allow
+        - p, proj:mip-argo-project-common:common-admin, applications, update, mip-argo-project-common/*,
+          allow
+        - p, proj:mip-argo-project-common:common-admin, applications, delete, mip-argo-project-common/*,
+          allow
+        - p, proj:mip-argo-project-common:common-admin, applications, sync, mip-argo-project-common/*,
+          allow
       groups: [argocd-admins]
     - name: common-operator
       description: Limited access to common resources

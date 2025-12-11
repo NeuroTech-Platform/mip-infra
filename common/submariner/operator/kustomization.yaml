@@ -1,3 +1,4 @@
+---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 helmCharts:
@@ -7,8 +8,7 @@ helmCharts:
     releaseName: submariner-operator
     namespace: submariner-operator
     valuesFile: values.yaml
-resources:
-  - gateway-loadbalancer-ip.yaml
+resources: [gateway-loadbalancer-ip.yaml]
 patches:
   - target:
       group: rbac.authorization.k8s.io
