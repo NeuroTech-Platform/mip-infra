@@ -1,0 +1,3 @@
+# Values for Public RKE2 Broker Cluster
+# These override defaults from official submariner-k8s-broker and submariner-operator charts
+

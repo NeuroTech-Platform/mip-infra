@@ -36,15 +36,9 @@ rules:
   - apiGroups: [monitoring.coreos.com]
     resources: [prometheusrules, servicemonitors]
     verbs: [create, delete, patch, update]
-  - apiGroups: [cert-manager.io]
-    resources: [clusterissuers]
-    verbs: [create, delete, patch, update]
   - apiGroups: [networking.k8s.io]
     resources: [ingresses, networkpolicies, ingressclasses]
     verbs: [get, list, watch, create, update, patch, delete]
-  - apiGroups: [rbac.authorization.k8s.io]
-    resources: [clusterrolebindings, clusterroles, rolebindings, roles]
-    verbs: [create, delete, patch, update]
   - apiGroups: ['']
     resources:
       - configmaps
@@ -61,3 +55,31 @@ rules:
   - apiGroups: ['']
     resources: [pods]
     verbs: [create, delete, patch, update]  # in the future, only delete but at the moment we still have standalone pods
+
+  # Rule 4: Submariner requirements
+  # The controller needs these permissions to grant them to Submariner components
+  - apiGroups: [operator.openshift.io]
+    resources: [dnses]
+    verbs: [get, list, watch, update]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    verbs: [get, list]
+  - apiGroups: [projectcalico.org]
+    resources: [ippools]
+    verbs: [create, delete, update, deletecollection]
+  - apiGroups: [submariner.io]
+    resources: [clusters, endpoints, gateways, clusterglobalegressips, globalegressips, globalingressips, submariners]
+    verbs: [create, delete, deletecollection, get, list, patch, update, watch]
+  - apiGroups: [submariner.io]
+    resources: [clusterglobalegressips/status, globalegressips/status, globalingressips/status]
+    verbs: [create, delete, deletecollection, update]
+  - apiGroups: [network.openshift.io]
+    resources: [service/externalips]
+    verbs: [create, delete]
+  - apiGroups: ['']
+    resources: [nodes]
+    verbs: [get, list, watch, update]
+# Add if we ever use GlobalNet
+#  - apiGroups: ['']
+#    resources: [endpoints]
+#    verbs: [get, list, watch, create, update, delete, patch]

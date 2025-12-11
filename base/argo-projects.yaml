@@ -23,6 +23,8 @@ spec:
             fileName: mip-common
           - projectName: mip-argo-project-security
             fileName: mip-security
+          - projectName: mip-argo-project-submariner
+            fileName: submariner
   goTemplate: true
   template:
     metadata:

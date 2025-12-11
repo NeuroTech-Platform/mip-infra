@@ -1,0 +1,32 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+helmCharts:
+  - name: submariner-k8s-broker
+    repo: https://raw.githubusercontent.com/submariner-io/submariner-charts/gh-pages/charts
+    version: 0.21.0
+    releaseName: submariner-broker
+    namespace: submariner-k8s-broker
+    valuesFile: values.yaml
+resources:
+  - copy-secret-hook.yaml
+patches:
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: Role
+      name: submariner-broker-submariner-k8s-broker-cluster
+    patch: |-
+      $patch: delete
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: Role
+      metadata:
+        name: submariner-broker-submariner-k8s-broker-cluster
+  - target:
+      group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      name: submariner-broker-submariner-k8s-broker-cluster
+    patch: |-
+      $patch: delete
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: submariner-broker-submariner-k8s-broker-cluster

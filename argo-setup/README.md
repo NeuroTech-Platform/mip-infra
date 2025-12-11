@@ -44,9 +44,9 @@ ARGOCD_HOST=argocd.example.com #YOUR SUBDOMAIN HERE
 # Replace placeholder hostname in all patch files
 cd argo-setup
 # BSD-Style
-find . -type f -exec sed -i '' "s/argocd.example.com/$ARGOCD_HOST/g" {} +
+LC_ALL=C find . -type f -not -path '*/.git/*' -exec sed -i '' "s/argocd.example.com/$ARGOCD_HOST/g" {} +
 # GNU-Style
-find . -type f -exec sed -i "s/argocd.example.com/$ARGOCD_HOST/g" {} +
+LC_ALL=C find . -type f -not -path '*/.git/*' -exec sed -i "s/argocd.example.com/$ARGOCD_HOST/g" {} +
 
 # Resolve latest 3.0 version (or pin to specific version)
 export ARGOCD_SERIES=v3.0
@@ -58,6 +58,9 @@ export ARGOCD_VER=$(curl -s https://api.github.com/repos/argoproj/argo-cd/releas
 echo "Resolved latest 3.0 tag: $ARGOCD_VER"
 
 # Update kustomization.yaml with resolved version
+# BSD-Style
+sed -i '' "s|/v[0-9.]*/manifests/ha/install.yaml|/${ARGOCD_VER}/manifests/ha/install.yaml|g" patches/kustomization.yaml
+# GNU-Style
 sed -i "s|/v[0-9.]*/manifests/ha/install.yaml|/${ARGOCD_VER}/manifests/ha/install.yaml|g" patches/kustomization.yaml
 
 # 1. Namespace

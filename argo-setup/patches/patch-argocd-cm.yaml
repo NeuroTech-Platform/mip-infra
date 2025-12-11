@@ -12,3 +12,4 @@ data:
   application.instanceLabelKey: argocd.argoproj.io/instanceTracking
   installationID: mip-team-argo-cd
   resource.respectRBAC: normal
+  kustomize.buildOptions: --enable-helm

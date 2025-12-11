@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-submariner
+  namespace: argocd-mip-team
+  # RBAC rules derived from: https://github.com/submariner-io/submariner-charts/tree/main/charts
+spec:
+  description: Project for Submariner deployment
+  sourceRepos:
+    - git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    - https://submariner-io.github.io/submariner-charts/charts
+  destinations:
+    - namespace: submariner-k8s-broker
+      server: https://kubernetes.default.svc
+    - namespace: submariner-operator
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+    - group: submariner.io
+      kind: Cluster
+    - group: submariner.io
+      kind: Endpoint
+    - group: submariner.io
+      kind: Gateway
+    - group: submariner.io
+      kind: ClusterGlobalEgressIP
+    - group: submariner.io
+      kind: GlobalEgressIP
+  namespaceResourceWhitelist:
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: DaemonSet
+    - group: batch
+      kind: Job
+    - group: ''
+      kind: ServiceAccount
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+    - group: submariner.io
+      kind: Submariner
+    - group: submariner.io
+      kind: ServiceDiscovery
+    - group: submariner.io
+      kind: Broker
+  roles:
+    - name: submariner-admin
+      description: Admin access to Submariner resources
+      policies:
+        - p, proj:mip-argo-project-submariner:submariner-admin, applications, get, mip-argo-project-submariner/*, allow
+        - p, proj:mip-argo-project-submariner:submariner-admin, applications, create, mip-argo-project-submariner/*, allow
+        - p, proj:mip-argo-project-submariner:submariner-admin, applications, update, mip-argo-project-submariner/*, allow
+        - p, proj:mip-argo-project-submariner:submariner-admin, applications, delete, mip-argo-project-submariner/*, allow
+        - p, proj:mip-argo-project-submariner:submariner-admin, applications, sync, mip-argo-project-submariner/*, allow
+      groups: [argocd-admins]

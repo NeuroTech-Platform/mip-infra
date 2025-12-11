@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: submariner-gateway
+  namespace: submariner-operator
+  annotations:
+    metallb.universe.tf/address-pool: pool-no-auto
+    metallb.io/address-pool: pool-no-auto
+spec:
+  loadBalancerIP: "148.187.27.151"
+  externalTrafficPolicy: Local

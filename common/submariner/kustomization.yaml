@@ -1,0 +1,18 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+# Reference the Argo CD Application
+resources:
+  - submariner.yaml
+
+# Add any additional resources not covered by Helm charts
+# For example: ServiceExports, NetworkPolicies, etc.
+
+# Patches for customizing Helm-deployed resources (if needed).
+patches:
+  - path: patches/gateway-loadbalancer-ip.yaml
+    target:
+      kind: Service
+      name: submariner-gateway
+      namespace: submariner-operator
