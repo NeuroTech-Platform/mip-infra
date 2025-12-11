@@ -1,0 +1,35 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-submariner-rbac
+  namespace: argocd-mip-team
+spec:
+  description: Privileged project for Submariner RBAC resources
+  sourceRepos: [git@github.com:NeuroTech-Platform/mip-infra-staging.git]
+  destinations:
+    - namespace: submariner-k8s-broker
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+  namespaceResourceWhitelist:
+    - group: argoproj.io
+      kind: Application
+  roles:
+    - name: submariner-rbac-admin
+      description: Admin access to Submariner RBAC
+      policies:
+        - p, proj:mip-argo-project-submariner-rbac:submariner-rbac-admin, applications,
+          get, mip-argo-project-submariner-rbac/*, allow
+        - p, proj:mip-argo-project-submariner-rbac:submariner-rbac-admin, applications,
+          create, mip-argo-project-submariner-rbac/*, allow
+        - p, proj:mip-argo-project-submariner-rbac:submariner-rbac-admin, applications,
+          update, mip-argo-project-submariner-rbac/*, allow
+        - p, proj:mip-argo-project-submariner-rbac:submariner-rbac-admin, applications,
+          delete, mip-argo-project-submariner-rbac/*, allow
+        - p, proj:mip-argo-project-submariner-rbac:submariner-rbac-admin, applications,
+          sync, mip-argo-project-submariner-rbac/*, allow
+      groups: [argocd-admins]

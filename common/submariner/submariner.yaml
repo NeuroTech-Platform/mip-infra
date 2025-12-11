@@ -1,0 +1,61 @@
+---
+# Submariner Broker Application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: submariner-broker
+  namespace: argocd-mip-team
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+  annotations:
+    argocd.argoproj.io/sync-wave: '0'  # Deploy first
+spec:
+  project: mip-argo-project-submariner
+  sources:
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+      targetRevision: main
+      path: common/submariner/broker
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: submariner-k8s-broker
+  syncPolicy:
+    syncOptions: [CreateNamespace=true]
+    automated:
+      selfHeal: true
+      prune: false
+---
+# Submariner Operator Application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: submariner-operator
+  namespace: argocd-mip-team
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+  annotations:
+    argocd.argoproj.io/sync-wave: '1'  # Deploy after broker
+spec:
+  project: mip-argo-project-submariner
+  sources:
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+      targetRevision: main
+      path: common/submariner/operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: submariner-operator
+  ignoreDifferences:  # for cached resources when we do manual tests
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+      jqPathExpressions: [.metadata.labels]
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+      jqPathExpressions: [.metadata.labels]
+    - group: rbac.authorization.k8s.io
+      kind: Role
+      jqPathExpressions: [.metadata.labels]
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+      jqPathExpressions: [.metadata.labels]
+  syncPolicy:
+    syncOptions: [CreateNamespace=true]
+    automated:
+      selfHeal: true
+      prune: false

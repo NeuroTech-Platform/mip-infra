@@ -1,0 +1,39 @@
+---
+# Customizations for mip-stack in federation-z
+# Example
+# replicaCount: 3
+# image:
+#   tag: latest
+# resources:
+#   limits:
+#     cpu: "2"
+#     memory: "2Gi"
+#   requests:
+#     cpu: "1"
+#     memory: "1Gi"
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mip-stack
+  namespace: argocd-mip-team
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: mip-argo-project-federation-z
+  destination:
+    namespace: federation-z
+  sources:
+    - repoURL: https://github.com/HBPMedical/mip-deployment
+      targetRevision: f7c64415c48f56bdb25188721d5857a5d79e2547
+      path: kubernetes
+      helm:
+        valueFiles:
+          - values.yaml
+          - $values/deployments/shared-apps/mip-stack/values.yaml
+          - $values/deployments/hybrid/federations/federation-Z/mip-infrastructure/customizations/mip-stack-values.yaml
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
+    automated:
+      selfHeal: true

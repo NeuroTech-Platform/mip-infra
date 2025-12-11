@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: exareme2
+  namespace: argocd-mip-team
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: mip-argo-project-federation-z
+  destination:
+    namespace: federation-z
+  sources:
+    - repoURL: https://github.com/madgik/exareme2
+      targetRevision: c1d4eb3d9d90edcf868a3a6395cc37b19c934e66  # 0.28.0
+      path: kubernetes
+      helm:
+        valueFiles:
+          - values.yaml
+          - $values/deployments/shared-apps/exareme2/values.yaml
+          - $values/deployments/hybrid/federations/federation-Z/mip-infrastructure/customizations/exareme2-values.yaml
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+      targetRevision: main
+      ref: values
+  syncPolicy:
+    syncOptions: [CreateNamespace=true, ApplyOutOfSyncOnly=true]
+    automated:
+      selfHeal: true

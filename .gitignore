@@ -3,7 +3,7 @@ _*/
 
 ### Helm ###
 # Chart dependencies
-**/charts/*.tgz
+charts/
 
 ### JetBrains+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider

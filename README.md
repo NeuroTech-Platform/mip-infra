@@ -206,6 +206,39 @@ graph TD
 - `argocd` CLI installed (optional but recommended)
 - SSH access to the repository configured in Argo CD
 
+### 🔐 Remote Access (VPN/SSH)
+
+If you are not on the same network as the cluster, you need to tunnel your traffic.
+
+#### Option A: SOCKS Proxy (Recommended for `kubectl`)
+This routes all your traffic through the jump host.
+
+1. **Open Tunnel**:
+   ```bash
+   ssh -D 1080 -C -q -N <user>@<jump-host>
+   ```
+2. **Configure Environment**:
+   ```bash
+   export HTTPS_PROXY=socks5://127.0.0.1:1080
+   ```
+
+#### Option B: Port Forward + Hosts (Recommended for `argocd` CLI / UI)
+This tricks your local machine into thinking `localhost` is the remote server, while preserving the hostname for Ingress routing.
+
+1. **Update `/etc/hosts`**:
+   ```bash
+   # Add this line
+   127.0.0.1 argocd.mip-tds.chuv.cscs.ch
+   ```
+2. **Open Tunnel (Sudo required for port 443)**:
+   ```bash
+   sudo ssh -L 443:argocd.mip-tds.chuv.cscs.ch:443 <user>@<jump-host>
+   ```
+3. **Login**:
+   ```bash
+   argocd login argocd.mip-tds.chuv.cscs.ch:443 --insecure --grpc-web
+   ```
+
 ### Initial secrets:
 
 The following secrets must exist in the cluster before or after running this repository's setup scripts. If you run it after, creation will hang until these are present.
@@ -288,6 +321,7 @@ argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
   --name mip-infra
 
 kubectl apply -f base/mip-infrastructure/rbac/nginx-public-rbac.yaml
+kubectl apply -f base/mip-infrastructure/rbac/submariner-rbac.yaml
 ```
 
 

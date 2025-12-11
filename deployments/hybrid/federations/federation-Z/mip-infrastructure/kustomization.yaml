@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: argocd-mip-team
+
+# Add a prefix to all resource names
+namePrefix: federation-z-
+commonLabels:
+  app.kubernetes.io/managed-by: argocd
+  app.kubernetes.io/part-of: federation-z
+  argocd.instance: mip-team
+resources:
+  - ../../../../../deployments/shared-apps/exareme2
+  - ../../../../../deployments/shared-apps/mip-stack
+patches:
+# JSON patches to customize project, namespace, and add federation-specific values
+  - path: customizations/exareme2-kustomize.yaml
+    target:
+      kind: Application
+      name: exareme2
+  - path: customizations/mip-stack-kustomize.yaml
+    target:
+      kind: Application
+      name: mip-stack

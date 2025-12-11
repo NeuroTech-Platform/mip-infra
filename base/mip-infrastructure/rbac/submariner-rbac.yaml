@@ -1,0 +1,392 @@
+---
+# Namespaces required by Submariner components and RBACs below
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: submariner-operator
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: submariner-k8s-broker
+---
+# Extracted from submariner-operator Helm chart
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-operator
+rules:
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [create, get, list, watch, update]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, create, update, delete, watch]
+  - apiGroups: ['']
+    resources: [pods, services, nodes]
+    verbs: [get, list, watch]
+  - apiGroups: [operator.openshift.io]
+    resources: [dnses]
+    verbs: [get, update]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    resourceNames: [cluster]
+    verbs: [get]
+  - apiGroups: [monitoring.coreos.com]
+    resources: [servicemonitors]
+    verbs: [get, create]
+  - apiGroups: [apps]
+    resources: [daemonsets]
+    verbs: [list]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [create, get, list, update]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-operator
+subjects:
+  - kind: ServiceAccount
+    name: submariner-operator
+    namespace: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-operator
+---
+# Extracted from submariner-k8s-broker (submariner) Helm chart
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-gateway
+rules:
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [get, list, watch, create, update]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, create, update, delete]
+  - apiGroups: ['']
+    resources: [pods, services, nodes]
+    verbs: [get, list, watch, patch, update]
+  - apiGroups: [operator.openshift.io]
+    resources: [dnses]
+    verbs: [get, list, watch, update]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    verbs: [get, list]
+  - apiGroups: [submariner.io]
+    resources: [endpoints, gateways, clusters]
+    verbs: [create, get, list, watch, update, patch, delete]
+  - apiGroups: [submariner.io]
+    resources: [gateways/status]
+    verbs: [update, patch]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [create, get, list, update]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-routeagent
+rules:
+  - apiGroups: ['']
+    resources: [configmaps]
+    verbs: [get, list, watch, update]
+  - apiGroups: [apiextensions.k8s.io]
+    resources: [customresourcedefinitions]
+    verbs: [get, list, create, update, delete]
+  - apiGroups: ['']
+    resources: [pods, services]
+    verbs: [get, list, watch]
+  - apiGroups: [operator.openshift.io]
+    resources: [dnses]
+    verbs: [get, list, watch, update]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    verbs: [get, list]
+  - apiGroups: ['']
+    resources: [nodes]
+    verbs: [get, list, watch, update]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-routeagent
+subjects:
+  - kind: ServiceAccount
+    name: submariner-routeagent
+    namespace: submariner-k8s-broker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-routeagent
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-globalnet
+subjects:
+  - kind: ServiceAccount
+    name: submariner-globalnet
+    namespace: submariner-k8s-broker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-globalnet
+---
+# Namespaced Roles/Bindings (Extracted to prevent ArgoCD sync errors)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submariner-broker-submariner-k8s-broker-cluster
+  namespace: submariner-k8s-broker
+rules:
+  - apiGroups: [submariner.io]
+    resources: [clusters, endpoints]
+    verbs: [create, get, list, watch, patch, update, delete]
+  - apiGroups: [submariner.io]
+    resources: [brokers]
+    verbs: [get, list]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceimports, serviceimports/status]
+    verbs: [create, get, list, watch, patch, update, delete]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices, endpointslices/restricted]
+    verbs: [create, get, list, watch, patch, update, delete]
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, list, watch]
+  - apiGroups: ['']
+    resources: [serviceaccounts]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: submariner-broker-submariner-k8s-broker-cluster
+  namespace: submariner-k8s-broker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: submariner-broker-submariner-k8s-broker-cluster
+subjects:
+  - kind: ServiceAccount
+    name: submariner-broker-submariner-k8s-broker-client
+    namespace: submariner-k8s-broker
+---
+# Operator ClusterRoles and ClusterRoleBindings
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-gateway
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-gateway
+subjects:
+  - kind: ServiceAccount
+    name: submariner-gateway
+    namespace: submariner-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-lighthouse-agent
+rules:
+  - apiGroups: ['']
+    resources: [services, namespaces, endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices, endpointslices/restricted]
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+      - deletecollection
+  - apiGroups: [submariner.io]
+    resources: [gateways, globalingressips]
+    verbs: [get, list, watch]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceimports, serviceimports/status]
+    verbs: [create, get, list, watch, update, delete]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceexports]
+    verbs: [get, list, watch]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceexports/status]
+    verbs: [update]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-lighthouse-agent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-lighthouse-agent
+subjects:
+  - kind: ServiceAccount
+    name: submariner-lighthouse-agent
+    namespace: submariner-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-lighthouse-coredns
+rules:
+  - apiGroups: [discovery.k8s.io]
+    resources: [endpointslices]
+    verbs: [get, list, watch]
+  - apiGroups: [submariner.io]
+    resources: [gateways, submariners]
+    verbs: [get, list, watch]
+  - apiGroups: [multicluster.x-k8s.io]
+    resources: [serviceimports]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-lighthouse-coredns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-lighthouse-coredns
+subjects:
+  - kind: ServiceAccount
+    name: submariner-lighthouse-coredns
+    namespace: submariner-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-routeagent
+rules:
+  - apiGroups: ['']
+    resources: [pods, services, configmaps, endpoints]
+    verbs: [get, list]
+  - apiGroups: ['']
+    resources: [secrets]
+    resourceNames: [ovn-cert]
+    verbs: [get]
+  - apiGroups: [config.openshift.io]
+    resources: [networks]
+    resourceNames: [cluster]
+    verbs: [get]
+  - apiGroups: ['']
+    resources: [nodes]
+    verbs: [get, list, watch, update]
+  - apiGroups: [projectcalico.org]
+    resources: [ippools]
+    verbs: [get, create, delete, update, deletecollection]
+  - apiGroups: [submariner.io]
+    resources: [endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [submariner.io]
+    resources: [routeagents, gatewayroutes, nongatewayroutes]
+    verbs: [get, list, watch, create, update, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-routeagent
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-routeagent
+subjects:
+  - kind: ServiceAccount
+    name: submariner-routeagent
+    namespace: submariner-operator
+---
+# RBAC for broker secret copier job (used by PostSync hook)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: broker-secret-handler
+  namespace: submariner-k8s-broker
+rules:
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, create, update, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: broker-secret-copier-reader
+  namespace: submariner-k8s-broker
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: broker-secret-handler
+subjects:
+  - kind: ServiceAccount
+    name: broker-secret-copier
+    namespace: submariner-k8s-broker
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: operator-secret-writer
+  namespace: submariner-operator
+rules:
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, create, update, patch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: broker-secret-copier-writer
+  namespace: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: operator-secret-writer
+subjects:
+  - kind: ServiceAccount
+    name: broker-secret-copier
+    namespace: submariner-k8s-broker
+---
+# Namespaced permissions for submariner-operator to watch resources in its own namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submariner-operator-namespace
+  namespace: submariner-operator
+rules:
+  - apiGroups: [submariner.io]
+    resources: [gateways, servicediscoveries, submariners, brokers]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: [submariner.io]
+    resources:
+      - gateways/status
+      - servicediscoveries/status
+      - submariners/status
+      - brokers/status
+    verbs: [get, update, patch]
+  - apiGroups: [apps]
+    resources: [daemonsets, deployments]
+    verbs: [get, list, watch, create, update, patch, delete]
+  - apiGroups: ['']
+    resources: [services, configmaps, secrets]
+    verbs: [get, list, watch, create, update, patch, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: submariner-operator-namespace
+  namespace: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: submariner-operator-namespace
+subjects:
+  - kind: ServiceAccount
+    name: submariner-operator
+    namespace: submariner-operator

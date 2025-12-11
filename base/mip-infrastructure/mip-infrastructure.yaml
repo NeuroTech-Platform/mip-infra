@@ -36,6 +36,7 @@ spec:
                 - path: common/datacatalog
                 - path: common/nginx-ingress
                 - path: common/security
+                - path: common/submariner
           - list:
               elements:
                 - cluster: https://kubernetes.default.svc
