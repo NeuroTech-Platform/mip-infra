@@ -46,7 +46,7 @@ service:
   annotations:
     metallb.universe.tf/address-pool: pool-no-auto
     metallb.io/address-pool: pool-no-auto
-  loadBalancerIP: 148.187.27.151
+  loadBalancerIP: 148.187.143.43
   externalTrafficPolicy: Local
 # Resource requirements
 operator:

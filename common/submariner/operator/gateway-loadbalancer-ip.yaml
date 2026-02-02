@@ -6,7 +6,7 @@ metadata:
   namespace: submariner-operator
 spec:
   type: LoadBalancer
-  loadBalancerIP: 148.187.27.151
+  loadBalancerIP: 148.187.143.43
   externalTrafficPolicy: Local
   ports:
     - name: ipsec-ike
