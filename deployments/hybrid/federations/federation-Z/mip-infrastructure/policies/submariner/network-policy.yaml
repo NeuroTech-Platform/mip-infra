@@ -1,3 +1,4 @@
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -15,11 +16,11 @@ spec:
   # Allow inbound traffic from the remote clusters' Pod CIDRs
   ingress:
     - from:
-        - ipBlock: { cidr: 10.3.0.0/16 }
+        - ipBlock: {cidr: 10.3.0.0/16}
         # - one per remote node
 
   # Allow outbound traffic to the remote clusters' Pod CIDRs
   egress:
     - to:
-        - ipBlock: { cidr: 10.3.0.0/16 }
+        - ipBlock: {cidr: 10.3.0.0/16}
         # - one per remote node
