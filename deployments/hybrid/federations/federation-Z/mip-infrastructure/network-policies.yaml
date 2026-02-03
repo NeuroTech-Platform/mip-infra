@@ -10,7 +10,7 @@ spec:
   source:
     repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
     targetRevision: main
-    path: deployments/hybrid/federations/federation-Z/mip-infrastructure/policies/submariner
+    path: deployments/hybrid/federations/federation-Z/mip-infrastructure/submariner-policies/
   destination:
     server: https://kubernetes.default.svc
     namespace: federation-z

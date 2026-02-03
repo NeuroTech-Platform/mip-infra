@@ -12,7 +12,7 @@ commonLabels:
 resources:
   - ../../../../../deployments/shared-apps/exareme2
   - ../../../../../deployments/shared-apps/mip-stack
-  - submariner-network-policy.yaml
+  - network-policies.yaml
 patches:
 # JSON patches to customize project, namespace, and add federation-specific values
   - path: customizations/exareme2-kustomize.yaml
