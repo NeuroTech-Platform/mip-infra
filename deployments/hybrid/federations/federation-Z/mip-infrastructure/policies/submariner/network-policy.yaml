@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-submariner-cidrs
+  namespace: federation-z
+spec:
+  # Apply ONLY to exareme2-controller
+  podSelector:
+    matchLabels:
+      app: exareme2-controller
+  policyTypes:
+    - Ingress
+    - Egress
+
+  # Allow inbound traffic from the remote clusters' Pod CIDRs
+  ingress:
+    - from:
+        - ipBlock: { cidr: 10.3.0.0/16 }
+        # - one per remote node
+
+  # Allow outbound traffic to the remote clusters' Pod CIDRs
+  egress:
+    - to:
+        - ipBlock: { cidr: 10.3.0.0/16 }
+        # - one per remote node

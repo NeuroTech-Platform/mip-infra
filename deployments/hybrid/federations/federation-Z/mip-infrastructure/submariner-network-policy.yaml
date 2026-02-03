@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: submariner-network-policy
+  namespace: argocd-mip-team
+  finalizers: [resources-finalizer.argocd.argoproj.io]
+spec:
+  project: mip-argo-project-federation-z
+  source:
+    repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+    targetRevision: main
+    path: deployments/hybrid/federations/federation-Z/mip-infrastructure/policies/submariner
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: federation-z
+  syncPolicy:
+    automated:
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true

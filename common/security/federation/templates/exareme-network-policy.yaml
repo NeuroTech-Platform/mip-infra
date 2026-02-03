@@ -1,0 +1,63 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: exareme-worker-isolation
+  namespace: {{.Values.targetNamespace}}
+  labels:
+    app.kubernetes.io/name: federation-network-policy
+    app.kubernetes.io/instance: {{.Release.Name}}
+    app.kubernetes.io/managed-by: {{.Release.Service}}
+    mip.namespace-type: federation
+spec:
+  # Select all workers
+  podSelector:
+    matchLabels:
+      app: exareme2-worker
+  policyTypes:
+    - Ingress
+    - Egress
+  
+  # Allow Ingress ONLY from Controller
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: exareme2-controller
+  
+  # Worker only query its local dataset
+  egress: []
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: exareme-controller-access
+  namespace: {{.Values.targetNamespace}}
+  labels:
+    app.kubernetes.io/name: federation-network-policy
+    app.kubernetes.io/instance: {{.Release.Name}}
+    app.kubernetes.io/managed-by: {{.Release.Service}}
+    mip.namespace-type: federation
+spec:
+  # Select the controller
+  podSelector:
+    matchLabels:
+      app: exareme2-controller
+  policyTypes:
+    - Egress
+  
+  # Allow Controller to talk to Workers and DNS
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: exareme2-worker
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{.Values.systemNamespace}}
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53

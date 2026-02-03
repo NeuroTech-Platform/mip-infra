@@ -12,7 +12,13 @@ metadata:
     mip.namespace-type: federation
     mip.federation-type: {{.Values.federationType}}
 spec:
-  podSelector: {}
+  podSelector:
+    {{- if .Values.networkPolicy.excludedSelector }}
+    matchExpressions:
+      {{- toYaml .Values.networkPolicy.excludedSelector | nindent 6 }}
+    {{- else }}
+    {}
+    {{- end }}
   policyTypes:
     - Ingress
     - Egress
