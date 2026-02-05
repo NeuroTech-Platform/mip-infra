@@ -8,7 +8,7 @@ metadata:
 spec:
   description: Project for Submariner deployment
   sourceRepos:
-    - git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    - git@github.com:NeuroTech-Platform/mip-infra.git
     - https://submariner-io.github.io/submariner-charts/charts
   destinations:
     - namespace: submariner-k8s-broker

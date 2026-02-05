@@ -30,7 +30,7 @@ spec:
           - values.yaml
           - $values/deployments/shared-apps/mip-stack/values.yaml
           - $values/deployments/hybrid/federations/federation-Z/mip-infrastructure/customizations/mip-stack-values.yaml
-    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra.git
       targetRevision: main
       ref: values
   syncPolicy:
