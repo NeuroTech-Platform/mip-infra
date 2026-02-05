@@ -75,7 +75,15 @@ spec:
     - name: federation-admin
       description: Full access to federation resources
       policies:
-        - p, proj:mip-argo-project-federations:federation-admin, applications, *,
+        - p, proj:mip-argo-project-federations:federation-admin, applications, get,
+          mip-argo-project-federations/*, allow
+        - p, proj:mip-argo-project-federations:federation-admin, applications, create,
+          mip-argo-project-federations/*, allow
+        - p, proj:mip-argo-project-federations:federation-admin, applications, update,
+          mip-argo-project-federations/*, allow
+        - p, proj:mip-argo-project-federations:federation-admin, applications, delete,
+          mip-argo-project-federations/*, allow
+        - p, proj:mip-argo-project-federations:federation-admin, applications, sync,
           mip-argo-project-federations/*, allow
       groups: [argocd-admins]
     - name: federation-developer

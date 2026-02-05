@@ -1,0 +1,5 @@
+---
+log_level: DEBUG
+namespace: federation-z
+controller:
+  workers_dns: exareme2-workers-service.federation-z.svc.cluster.local,exareme2-test-workers-service.federation-z.svc.clusterset.local

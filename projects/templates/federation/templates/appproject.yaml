@@ -35,7 +35,11 @@ spec:
     - name: federation-admin
       description: "Admin access to {{ .Values.federationName }} resources"
       policies:
-        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-admin, applications, *, mip-argo-project-{{ .Values.federationName }}/*, allow
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-admin, applications, get, mip-argo-project-{{ .Values.federationName }}/*, allow
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-admin, applications, create, mip-argo-project-{{ .Values.federationName }}/*, allow
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-admin, applications, update, mip-argo-project-{{ .Values.federationName }}/*, allow
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-admin, applications, delete, mip-argo-project-{{ .Values.federationName }}/*, allow
+        - p, proj:mip-argo-project-{{ .Values.federationName }}:federation-admin, applications, sync, mip-argo-project-{{ .Values.federationName }}/*, allow
       groups:
         {{- range .Values.rbac.adminGroups }}
         - {{ . }}

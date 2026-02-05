@@ -1,0 +1,59 @@
+---
+# Values for Public RKE2 Operator
+# These override defaults from official submariner-operator chart
+# Cluster identification - Updated from actual deployment
+submariner:
+  clusterId: mip-tds-fqdn
+
+  # Network configuration - From deployed cluster
+  clusterCidr: 10.42.0.0/16  # Pod network CIDR
+  serviceCidr: ''  # Not specified (empty in deployed config)
+  # Globalnet disabled (CIDRs don't overlap)
+  globalCidr: ''
+
+  # Clusterset IP configuration for service discovery
+  clustersetIpCidr: 243.0.0.0/20
+  clustersetIpEnabled: false
+
+  # NAT traversal enabled for remote clusters behind NAT
+  natEnabled: true
+
+  # LoadBalancer service type for gateway
+  loadBalancerEnabled: true
+
+  # Cable driver - From deployed config
+  cableDriver: libreswan
+# Broker connection - From deployed cluster
+# NOTE: token and ca are empty here - the brokerK8sSecret field will be
+# set via a strategic merge patch in kustomization.yaml to reference
+# the submariner-broker-secret created by the PostSync hook
+broker:
+  server: mip-tds.chuv.cscs.ch:6443
+  token: ''
+  ca: ''
+  namespace: submariner-k8s-broker
+  insecure: false
+rbac:
+  create: false  # Managed externally for security
+# Service discovery enabled (this is at submariner level in the chart)
+# Already set above as submariner.serviceDiscovery
+# Gateway/IPsec configuration
+ipsec:
+  natPort: 4500
+  ikePort: 500
+# Service configuration for gateway LoadBalancer
+service:
+  annotations:
+    metallb.universe.tf/address-pool: pool-no-auto
+    metallb.io/address-pool: pool-no-auto
+  loadBalancerIP: 148.187.143.43
+  externalTrafficPolicy: Local
+# Resource requirements
+operator:
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: '1'
+      memory: 1Gi

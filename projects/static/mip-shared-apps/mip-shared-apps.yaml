@@ -74,14 +74,22 @@ spec:
     - name: shared-apps-admin
       description: Full access to shared applications
       policies:
-        - p, proj:mip-argo-project-shared-apps:shared-apps-admin, applications, *,
-          mip-shared-apps/*, allow
+        - p, proj:mip-argo-project-shared-apps:shared-apps-admin, applications, get,
+          mip-argo-project-shared-apps/*, allow
+        - p, proj:mip-argo-project-shared-apps:shared-apps-admin, applications, create,
+          mip-argo-project-shared-apps/*, allow
+        - p, proj:mip-argo-project-shared-apps:shared-apps-admin, applications, update,
+          mip-argo-project-shared-apps/*, allow
+        - p, proj:mip-argo-project-shared-apps:shared-apps-admin, applications, delete,
+          mip-argo-project-shared-apps/*, allow
+        - p, proj:mip-argo-project-shared-apps:shared-apps-admin, applications, sync,
+          mip-argo-project-shared-apps/*, allow
       groups: [argocd-admins]
     - name: shared-apps-developer
       description: Limited access to shared applications
       policies:
         - p, proj:mip-argo-project-shared-apps:shared-apps-developer, applications,
-          sync, mip-shared-apps/*, allow
+          sync, mip-argo-project-shared-apps/*, allow
         - p, proj:mip-argo-project-shared-apps:shared-apps-developer, applications,
-          get, mip-shared-apps/*, allow
+          get, mip-argo-project-shared-apps/*, allow
       groups: [argocd-developers]

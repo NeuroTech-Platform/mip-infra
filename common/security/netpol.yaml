@@ -51,6 +51,12 @@ spec:
             - name: federationType
               value: '{{ if contains "local" .path.path }}local{{ else }}hybrid{{
                 end }}'
+            - name: networkPolicy.excludedSelector[0].key
+              value: app
+            - name: networkPolicy.excludedSelector[0].operator
+              value: In
+            - name: networkPolicy.excludedSelector[0].values[0]
+              value: exareme2-worker
       destination:
         server: '{{ .cluster }}'
         namespace: '{{ if contains "local" .path.path }}{{ .path.basename | lower

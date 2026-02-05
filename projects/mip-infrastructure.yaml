@@ -50,5 +50,13 @@ spec:
       description: Full access to infrastructure resources
       policies:
         - p, proj:mip-argo-project-infrastructure:infrastructure-admin, applications,
-          *, mip-argo-project-infrastructure/*, allow
+          get, mip-argo-project-infrastructure/*, allow
+        - p, proj:mip-argo-project-infrastructure:infrastructure-admin, applications,
+          create, mip-argo-project-infrastructure/*, allow
+        - p, proj:mip-argo-project-infrastructure:infrastructure-admin, applications,
+          update, mip-argo-project-infrastructure/*, allow
+        - p, proj:mip-argo-project-infrastructure:infrastructure-admin, applications,
+          delete, mip-argo-project-infrastructure/*, allow
+        - p, proj:mip-argo-project-infrastructure:infrastructure-admin, applications,
+          sync, mip-argo-project-infrastructure/*, allow
       groups: [argocd-admins]

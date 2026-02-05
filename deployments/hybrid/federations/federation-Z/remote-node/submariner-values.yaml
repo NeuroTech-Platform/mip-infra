@@ -1,0 +1,67 @@
+---
+# Submariner values for direct Helm install
+# Based on official chart: https://submariner.io/operations/deployment/helm/
+# 
+# Use with:
+# helm install submariner-operator submariner-latest/submariner-operator \
+#   --namespace submariner-operator --create-namespace \
+#   --values submariner-values.yaml
+# Broker configuration - populated via --set during helm install
+broker:
+  server: mip-tds.chuv.cscs.ch:6443
+  token: ''  # Populated via --set-string broker.token="$(cat broker-token.txt)" (plain text)
+  ca: ''  # Populated via --set-string broker.ca="$(cat broker-ca-base64.txt)" (base64-encoded)
+  namespace: submariner-k8s-broker
+  insecure: false  # Set to true only if broker uses self-signed cert (not recommended)
+# Submariner configuration
+submariner:
+  clusterId: node3
+  clusterCidr: 10.3.0.0/16
+  serviceCidr: 10.152.185.0/24
+  globalCidr: ''  # Empty unless using Globalnet
+  natEnabled: true
+  cableDriver: libreswan    # or "wireguard" or "vxlan"
+  serviceDiscovery: true
+  healthcheckEnabled: true
+  loadBalancerEnabled: false  # false for remote cluster
+  debug: false
+# IPSec configuration - PSK must match the main cluster's PSK
+ipsec:
+  psk: ''  # Populated via --set-string ipsec.psk="$(cat broker-psk.txt)" (extracted from main cluster)
+  natPort: 4500
+  ikePort: 500
+  forceUDPEncaps: false
+  debug: false
+# Service discovery (Lighthouse)
+serviceAccounts:
+  lighthouseAgent:
+    create: true
+  lighthouseCoreDns:
+    create: true
+# Gateway configuration
+gateway:
+  nattPort: 4500
+  metricsPort: 8080
+# Resource constraints (MicroK8s-optimized)
+resources:
+  gateway:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  routeAgent:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+  lighthouse:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
