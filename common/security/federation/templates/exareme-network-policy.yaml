@@ -52,6 +52,9 @@ spec:
         - podSelector:
             matchLabels:
               app: exareme2-worker
+          namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{.Values.targetNamespace}}
     - to:
         - namespaceSelector:
             matchLabels:

@@ -54,7 +54,7 @@ spec:
             - name: networkPolicy.excludedSelector[0].key
               value: app
             - name: networkPolicy.excludedSelector[0].operator
-              value: In
+              value: NotIn
             - name: networkPolicy.excludedSelector[0].values[0]
               value: exareme2-worker
       destination:
