@@ -11,7 +11,7 @@ metadata:
 spec:
   project: mip-argo-project-submariner
   sources:
-    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra.git
       targetRevision: main
       path: common/submariner/broker
   destination:
@@ -35,7 +35,7 @@ metadata:
 spec:
   project: mip-argo-project-submariner
   sources:
-    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra.git
       targetRevision: main
       path: common/submariner/operator
   destination:

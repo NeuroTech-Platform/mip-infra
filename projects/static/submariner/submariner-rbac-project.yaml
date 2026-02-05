@@ -6,7 +6,7 @@ metadata:
   namespace: argocd-mip-team
 spec:
   description: Privileged project for Submariner RBAC resources
-  sourceRepos: [git@github.com:NeuroTech-Platform/mip-infra-staging.git]
+  sourceRepos: [git@github.com:NeuroTech-Platform/mip-infra.git]
   destinations:
     - namespace: submariner-k8s-broker
       server: https://kubernetes.default.svc

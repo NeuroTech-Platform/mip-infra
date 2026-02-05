@@ -18,7 +18,7 @@ spec:
           - values.yaml
           - $values/deployments/shared-apps/exareme2/values.yaml
           - $values/deployments/hybrid/federations/federation-Z/mip-infrastructure/customizations/exareme2-values.yaml
-    - repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    - repoURL: git@github.com:NeuroTech-Platform/mip-infra.git
       targetRevision: main
       ref: values
   syncPolicy:
