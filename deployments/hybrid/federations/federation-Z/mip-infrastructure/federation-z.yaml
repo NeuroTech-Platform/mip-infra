@@ -11,7 +11,7 @@ metadata:
 spec:
   project: mip-argo-project-federations
   source:
-    repoURL: git@github.com:NeuroTech-Platform/mip-infra.git
+    repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
     targetRevision: main
     path: deployments/hybrid/federations/federation-Z
   destination:

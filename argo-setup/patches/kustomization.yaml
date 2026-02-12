@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: argocd-mip-team
 # Base: upstream HA manifest (resolved tag)
 resources:
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.0.20/manifests/ha/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.1.12/manifests/ha/install.yaml
   - patch-argocd-ingress.yaml
 patchesStrategicMerge:
   - patch-argocd-application-controller-clusterrole.yaml
