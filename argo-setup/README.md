@@ -1,4 +1,4 @@
-# Argo CD v3.0.latest – Small‑Team HA Install (TLS at Ingress)
+# Argo CD v3.1.latest – Small‑Team HA Install (TLS at Ingress)
 
 This readme bootstraps a **production‑ready, Highly Available** Argo CD instance for a small DevOps / Platform team (≈ < 100 Applications to start) running on a single Kubernetes cluster, with **TLS terminated at the ingress** and **Argo CD CLI access via `--grpc-web` (no `--insecure`flags).**
 
@@ -21,7 +21,7 @@ argo-setup/
 
 ## Versioning strategy
 
-We track the **latest released patch in the Argo CD 3.0 line**. In automation and docs we refer to this as `**v3.0.latest**`. At deploy time we *resolve* that alias to the actual tag (e.g., `v3.0.11`, `v3.0.12`, etc.) and commit the resolved tag into Git.
+We track the **latest released patch in the Argo CD 3.0 line**. In automation and docs we refer to this as `**v3.1.latest**`. At deploy time we *resolve* that alias to the actual tag (e.g., `v3.1.11`, `v3.1.12`, etc.) and commit the resolved tag into Git.
 
 Pin that value in your overlays (below) when promoting to prod.
 
@@ -117,7 +117,7 @@ namespace: argocd-mip-team
 
 # Base: upstream HA manifest (resolved tag)
 resources:
-  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.0.11/manifests/ha/install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v3.1.12/manifests/ha/install.yaml
 
 patchesStrategicMerge:
   - patch-argocd-application-controller-resources.yaml
