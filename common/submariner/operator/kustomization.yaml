@@ -8,6 +8,7 @@ helmCharts:
     releaseName: submariner-operator
     namespace: submariner-operator
     valuesFile: values.yaml
+    includeCRDs: true
 resources: [gateway-loadbalancer-ip.yaml]
 patches:
   - target:
