@@ -1,0 +1,58 @@
+---
+# Manual RBAC for ECK Beats (filebeat/metricbeat).
+# ECK chart templates intentionally do not include Beat RBAC resources.
+# ServiceAccounts are created by the ECK Helm chart in namespace elastic-system.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: eck-filebeat
+rules:
+  - apiGroups: ['']
+    resources: [pods, namespaces, nodes, endpoints, services]
+    verbs: [get, list, watch]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: eck-metricbeat
+rules:
+  - apiGroups: ['']
+    resources: [nodes, pods, namespaces, services, endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: ['']
+    resources: [nodes/stats]
+    verbs: [get]
+  - nonResourceURLs: [/metrics]
+    verbs: [get]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, delete]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eck-filebeat
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eck-filebeat
+subjects:
+  - kind: ServiceAccount
+    name: eck-filebeat
+    namespace: elastic-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: eck-metricbeat
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: eck-metricbeat
+subjects:
+  - kind: ServiceAccount
+    name: eck-metricbeat
+    namespace: elastic-system

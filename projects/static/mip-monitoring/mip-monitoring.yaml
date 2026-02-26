@@ -1,0 +1,102 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: mip-argo-project-monitoring
+  namespace: argocd-mip-team
+spec:
+  description: Monitoring resources like ECK
+  sourceRepos: [https://github.com/NeuroTech-Platform/mip-infra.git]
+  destinations:
+    - namespace: elastic-system
+      server: https://kubernetes.default.svc
+  namespaceResourceWhitelist:
+    - group: argoproj.io
+      kind: Application
+    - group: apps
+      kind: Deployment
+    - group: apps
+      kind: StatefulSet
+    - group: apps
+      kind: DaemonSet
+    - group: ''
+      kind: Service
+    - group: ''
+      kind: ConfigMap
+    - group: ''
+      kind: Secret
+    - group: ''
+      kind: PersistentVolumeClaim
+    - group: ''
+      kind: ServiceAccount
+    - group: ''
+      kind: Pod
+    - group: networking.k8s.io
+      kind: Ingress
+    - group: networking.k8s.io
+      kind: NetworkPolicy
+    - group: batch
+      kind: Job
+    - group: batch
+      kind: CronJob
+    - group: elasticsearch.k8s.elastic.co
+      kind: '*'
+    - group: kibana.k8s.elastic.co
+      kind: '*'
+    - group: beat.k8s.elastic.co
+      kind: '*'
+    - group: apm.k8s.elastic.co
+      kind: '*'
+    - group: enterprisesearch.k8s.elastic.co
+      kind: '*'
+    - group: maps.k8s.elastic.co
+      kind: '*'
+    - group: agent.k8s.elastic.co
+      kind: '*'
+    - group: autoscaling.k8s.elastic.co
+      kind: '*'
+  # Explicitly blacklist sensitive resources to be future proof
+  clusterResourceBlacklist:
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+  namespaceResourceBlacklist:
+    - group: rbac.authorization.k8s.io
+      kind: Role
+    - group: rbac.authorization.k8s.io
+      kind: RoleBinding
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'
+      duration: 24h
+      applications: ['*']
+  roles:
+    - name: monitoring-admin
+      description: Full access to monitoring resources
+      policies:
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, get,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, create,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, update,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, delete,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, sync,
+          mip-argo-project-monitoring/*, allow
+      groups: [argocd-admins]
+    - name: monitoring-operator
+      description: Limited access to monitoring resources
+      policies:
+        - p, proj:mip-argo-project-monitoring:monitoring-operator, applications, sync,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-operator, applications, get,
+          mip-argo-project-monitoring/*, allow
+      groups: [argocd-operators]
