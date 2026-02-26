@@ -322,6 +322,7 @@ argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
 
 kubectl apply -f base/mip-infrastructure/rbac/nginx-public-rbac.yaml
 kubectl apply -f base/mip-infrastructure/rbac/submariner-rbac.yaml
+kubectl apply -f base/mip-infrastructure/rbac/eck-beats-rbac.yaml
 ```
 
 

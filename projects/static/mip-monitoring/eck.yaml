@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: eck
+  namespace: argocd-mip-team
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: mip-argo-project-monitoring
+  source:
+    repoURL: git@github.com:NeuroTech-Platform/mip-infra-staging.git
+    targetRevision: main
+    path: common/monitoring/eck
+    helm:
+      releaseName: eck
+      skipCrds: true
+      values: |
+        observability:
+          metricbeat:
+            enabled: true
+          filebeat:
+            enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: elastic-system
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true

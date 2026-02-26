@@ -101,3 +101,24 @@ rules:
 #  - apiGroups: ['']
 #    resources: [endpoints]
 #    verbs: [get, list, watch, create, update, delete, patch]
+  # Rule 5: Elastic Stack resources
+  - apiGroups:
+      - elasticsearch.k8s.elastic.co
+      - kibana.k8s.elastic.co
+      - beat.k8s.elastic.co
+      - apm.k8s.elastic.co
+      - enterprisesearch.k8s.elastic.co
+      - maps.k8s.elastic.co
+      - agent.k8s.elastic.co
+      - autoscaling.k8s.elastic.co
+    resources: ['*']
+    verbs: [create, delete, patch, update, get, list, watch]
+
+  # Rule 6: Permissions required to grant Beat RBAC safely
+  # Argo CD must hold these permissions itself before it can reconcile
+  # ClusterRoles that include them (kubectl auth reconcile escalation checks).
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, delete]
+  - nonResourceURLs: [/metrics]
+    verbs: [get]
