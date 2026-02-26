@@ -54,7 +54,7 @@ All knobs live in `values.yaml`. Common overrides:
 
 - `elasticsearch.*` – adjust resources, replica count, or the StorageClass. Note: The default `storageClassName` is currently hardcoded to `ceph-corbo-cephfs` as it aligns with our current infrastructure, but you can override this for deployments in other environments.
 - `kibana.ingress.*` – enable ingress, set hosts/TLS, or keep using port-forward.
-- `observability.filebeat.*` / `observability.metricbeat.*` – enable and tune the DaemonSets. Filebeat defaults to 100m CPU, 400Mi request / 600Mi limit.
+- `observability.filebeat.*` / `observability.metricbeat.*` – enable and tune the DaemonSets. Filebeat defaults to 100m CPU, 400Mi request / 600Mi limit. Both use Generic Ephemeral Volumes for their `data` mounts by default (set to `ceph-corbo-cephfs` at 2Gi).
 - `alertNotifier.*` – enable notifier mode, then change the Cron schedule, PVC behaviour, secret names/keys, or Teams/Webex delivery. Note: Like Elasticsearch, the notifier PVC's default `storageClassName` is hardcoded to `ceph-corbo-cephfs`.
 
 ## Alert notifier configuration

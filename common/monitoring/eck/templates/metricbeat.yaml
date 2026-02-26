@@ -68,7 +68,14 @@ spec:
             {{- end }}
         volumes:
           - name: data
-            emptyDir: {}
+            ephemeral:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: [ "ReadWriteOnce" ]
+                  storageClassName: {{ .Values.observability.metricbeat.state.persistence.storageClassName | quote }}
+                  resources:
+                    requests:
+                      storage: {{ .Values.observability.metricbeat.state.persistence.size | quote }}
           - name: proc
             hostPath:
               path: /proc

@@ -60,7 +60,14 @@ spec:
             {{- end }}
         volumes:
           - name: data
-            emptyDir: {}
+            ephemeral:
+              volumeClaimTemplate:
+                spec:
+                  accessModes: [ "ReadWriteOnce" ]
+                  storageClassName: {{ .Values.observability.filebeat.state.persistence.storageClassName | quote }}
+                  resources:
+                    requests:
+                      storage: {{ .Values.observability.filebeat.state.persistence.size | quote }}
           - name: varlog
             hostPath:
               path: /var/log
