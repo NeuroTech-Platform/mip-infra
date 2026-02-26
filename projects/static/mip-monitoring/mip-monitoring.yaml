@@ -5,11 +5,10 @@ metadata:
   name: mip-argo-project-monitoring
   namespace: argocd-mip-team
   annotations:
-    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/sync-wave: '-1'
 spec:
   description: Monitoring resources like ECK
-  sourceRepos:
-    - git@github.com:NeuroTech-Platform/mip-infra-staging.git
+  sourceRepos: [git@github.com:NeuroTech-Platform/mip-infra-staging.git]
   destinations:
     - namespace: elastic-system
       server: https://kubernetes.default.svc
@@ -93,11 +92,16 @@ spec:
     - name: monitoring-admin
       description: Full access to monitoring resources
       policies:
-        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, get, mip-argo-project-monitoring/*, allow
-        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, create, mip-argo-project-monitoring/*, allow
-        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, update, mip-argo-project-monitoring/*, allow
-        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, delete, mip-argo-project-monitoring/*, allow
-        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, sync, mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, get,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, create,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, update,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, delete,
+          mip-argo-project-monitoring/*, allow
+        - p, proj:mip-argo-project-monitoring:monitoring-admin, applications, sync,
+          mip-argo-project-monitoring/*, allow
       groups: [argocd-admins]
     - name: monitoring-operator
       description: Limited access to monitoring resources

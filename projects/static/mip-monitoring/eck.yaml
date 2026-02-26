@@ -1,10 +1,10 @@
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: eck
   namespace: argocd-mip-team
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
+  finalizers: [resources-finalizer.argocd.argoproj.io]
 spec:
   project: mip-argo-project-monitoring
   source:

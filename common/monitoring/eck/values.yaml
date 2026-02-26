@@ -1,3 +1,4 @@
+---
 operator:
   enabled: false
   createNamespace: false
@@ -38,8 +39,8 @@ operator:
     cert-rotate-before: 24h
     disable-config-watch: false
     exposed-node-labels:
-    - topology.kubernetes.io/.*
-    - failure-domain.beta.kubernetes.io/.*
+      - topology.kubernetes.io/.*
+      - failure-domain.beta.kubernetes.io/.*
     set-default-security-context: auto-detect
     kube-client-timeout: 60s
     elasticsearch-client-timeout: 180s
@@ -70,33 +71,32 @@ elasticsearch:
       metadata:
         annotations: {}
   nodeSets:
-  - name: default
-    count: 1
-    config:
-      node.store.allow_mmap: false
-    podTemplate:
-      metadata:
-        labels: {}
-      spec:
-        containers:
-        - name: elasticsearch
-          resources:
-            requests:
-              cpu: 500m
-              memory: 2Gi
-            limits:
-              cpu: 2
-              memory: 2Gi
-    volumeClaimTemplates:
-    - metadata:
-        name: elasticsearch-data
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 10Gi
-        storageClassName: ceph-corbo-cephfs
+    - name: default
+      count: 1
+      config:
+        node.store.allow_mmap: false
+      podTemplate:
+        metadata:
+          labels: {}
+        spec:
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  cpu: 500m
+                  memory: 2Gi
+                limits:
+                  cpu: 2
+                  memory: 2Gi
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes: [ReadWriteOnce]
+            resources:
+              requests:
+                storage: 10Gi
+            storageClassName: ceph-corbo-cephfs
 kibana:
   enabled: true
   namespace: elastic-system
@@ -120,22 +120,22 @@ kibana:
       labels: {}
     spec:
       containers:
-      - name: kibana
-        resources:
-          requests:
-            cpu: 100m
-            memory: 512Mi
-          limits:
-            cpu: 1
-            memory: 1Gi
+        - name: kibana
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 1
+              memory: 1Gi
   ingress:
     enabled: false
     className: public
     annotations: {}
     hosts:
-    - host: localhost
-      path: /
-      pathType: Prefix
+      - host: localhost
+        path: /
+        pathType: Prefix
     tls: []
 observability:
   filebeat:
@@ -145,20 +145,19 @@ observability:
       filebeat:
         autodiscover:
           providers:
-          - type: kubernetes
-            node: ${NODE_NAME}
-            hints:
-              enabled: true
-              default_config:
-                type: container
-                paths:
-                - /var/log/containers/*${data.kubernetes.container.id}.log
-                processors:
-                - add_kubernetes_metadata: {}
+            - type: kubernetes
+              node: ${NODE_NAME}
+              hints:
+                enabled: true
+                default_config:
+                  type: container
+                  paths: ['/var/log/containers/*${data.kubernetes.container.id}.log']
+                  processors:
+                    - add_kubernetes_metadata: {}
       processors:
-      - add_cloud_metadata: {}
-      - add_host_metadata: {}
-      - add_kubernetes_metadata: {}
+        - add_cloud_metadata: {}
+        - add_host_metadata: {}
+        - add_kubernetes_metadata: {}
     resources:
       requests:
         cpu: 100m
@@ -167,8 +166,7 @@ observability:
         memory: 600Mi
   output:
     elasticsearch:
-      hosts:
-      - ${ELASTICSEARCH_HOSTS}
+      hosts: ['${ELASTICSEARCH_HOSTS}']
       username: ${ELASTICSEARCH_USERNAME}
       password: ${ELASTICSEARCH_PASSWORD}
   metricbeat:
@@ -179,47 +177,33 @@ observability:
         data_stream:
           enabled: true
         modules:
-        - module: kubernetes
-          metricsets:
-          - node
-          - system
-          - pod
-          - container
-          - volume
-          period: 20s
-          host: ${NODE_NAME}
-          hosts:
-          - https://${NODE_IP}:10250
-          ssl.verification_mode: none
-          bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-          processors:
-          - add_kubernetes_metadata: {}
-        - module: kubernetes
-          metricsets:
-          - apiserver
-          hosts:
-          - https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}
-          ssl.certificate_authorities:
-          - /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-          bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-          period: 30s
-        - module: system
-          period: 20s
-          hostfs: /hostfs
-          metricsets:
-          - cpu
-          - memory
-          - network
-          - diskio
-          - filesystem
+          - module: kubernetes
+            metricsets: [node, system, pod, container, volume]
+            period: 20s
+            host: ${NODE_NAME}
+            hosts: ['https://${NODE_IP}:10250']
+            ssl.verification_mode: none
+            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            processors:
+              - add_kubernetes_metadata: {}
+          - module: kubernetes
+            metricsets: [apiserver]
+            hosts: ['https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}']
+            ssl.certificate_authorities:
+              - /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+            period: 30s
+          - module: system
+            period: 20s
+            hostfs: /hostfs
+            metricsets: [cpu, memory, network, diskio, filesystem]
       processors:
-      - add_cloud_metadata: {}
-      - add_host_metadata: {}
-      - add_kubernetes_metadata: {}
+        - add_cloud_metadata: {}
+        - add_host_metadata: {}
+        - add_kubernetes_metadata: {}
       output:
         elasticsearch:
-          hosts:
-          - ${ELASTICSEARCH_HOSTS}
+          hosts: ['${ELASTICSEARCH_HOSTS}']
           username: ${ELASTICSEARCH_USERNAME}
           password: ${ELASTICSEARCH_PASSWORD}
 alertNotifier:
@@ -228,7 +212,7 @@ alertNotifier:
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
-  startingDeadlineSeconds: null
+  startingDeadlineSeconds:
   backoffLimit: 3
   image:
     repository: madgik/eck-notifier
@@ -260,8 +244,7 @@ alertNotifier:
       enabled: true
       existingClaim: ''
       storageClassName: ceph-corbo-cephfs
-      accessModes:
-      - ReadWriteOnce
+      accessModes: [ReadWriteOnce]
       size: 1Gi
       annotations: {}
   secret:

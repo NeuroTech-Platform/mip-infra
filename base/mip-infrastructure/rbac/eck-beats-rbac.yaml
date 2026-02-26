@@ -7,29 +7,29 @@ kind: ClusterRole
 metadata:
   name: eck-filebeat
 rules:
-  - apiGroups: [""]
-    resources: ["pods", "namespaces", "nodes", "endpoints", "services"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["coordination.k8s.io"]
-    resources: ["leases"]
-    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: ['']
+    resources: [pods, namespaces, nodes, endpoints, services]
+    verbs: [get, list, watch]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, delete]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: eck-metricbeat
 rules:
-  - apiGroups: [""]
-    resources: ["nodes", "pods", "namespaces", "services", "endpoints"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["nodes/stats"]
-    verbs: ["get"]
-  - nonResourceURLs: ["/metrics"]
-    verbs: ["get"]
-  - apiGroups: ["coordination.k8s.io"]
-    resources: ["leases"]
-    verbs: ["get", "list", "watch", "create", "update", "delete"]
+  - apiGroups: ['']
+    resources: [nodes, pods, namespaces, services, endpoints]
+    verbs: [get, list, watch]
+  - apiGroups: ['']
+    resources: [nodes/stats]
+    verbs: [get]
+  - nonResourceURLs: [/metrics]
+    verbs: [get]
+  - apiGroups: [coordination.k8s.io]
+    resources: [leases]
+    verbs: [get, list, watch, create, update, delete]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
