@@ -28,8 +28,6 @@ spec:
       server: https://kubernetes.default.svc
     - namespace: cert-manager
       server: https://kubernetes.default.svc
-    - namespace: elastic-system
-      server: https://kubernetes.default.svc
   clusterResourceWhitelist:
     - group: ''
       kind: Namespace
@@ -41,14 +39,6 @@ spec:
       kind: IngressClass
     - group: cert-manager.io
       kind: ClusterIssuer
-    - group: rbac.authorization.k8s.io
-      kind: ClusterRole
-    - group: rbac.authorization.k8s.io
-      kind: ClusterRoleBinding
-    - group: admissionregistration.k8s.io
-      kind: ValidatingWebhookConfiguration
-    - group: admissionregistration.k8s.io
-      kind: MutatingWebhookConfiguration
   namespaceResourceWhitelist:
     - group: argoproj.io
       kind: Application
@@ -94,22 +84,6 @@ spec:
       kind: Issuer
     - group: cert-manager.io
       kind: ClusterIssuer
-    - group: elasticsearch.k8s.elastic.co
-      kind: '*'
-    - group: kibana.k8s.elastic.co
-      kind: '*'
-    - group: beat.k8s.elastic.co
-      kind: '*'
-    - group: apm.k8s.elastic.co
-      kind: '*'
-    - group: enterprisesearch.k8s.elastic.co
-      kind: '*'
-    - group: maps.k8s.elastic.co
-      kind: '*'
-    - group: agent.k8s.elastic.co
-      kind: '*'
-    - group: autoscaling.k8s.elastic.co
-      kind: '*'
   # Explicitly blacklist sensitive resources to be future proof
   clusterResourceBlacklist:
     - group: rbac.authorization.k8s.io
