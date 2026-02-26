@@ -1,9 +1,10 @@
+---
 apiVersion: v2
 name: elastic-operator
 description: Elastic Cloud on Kubernetes (ECK) Operator
 type: application
 version: 1.0.0
-appVersion: "2.13.0"
+appVersion: 2.13.0
 dependencies:
   - name: eck-operator
     version: 2.13.0

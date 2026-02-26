@@ -1,3 +1,4 @@
+---
 eck-operator:
   createNamespace: false
   webhook:
