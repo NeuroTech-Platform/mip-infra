@@ -4,11 +4,9 @@ kind: AppProject
 metadata:
   name: mip-argo-project-monitoring
   namespace: argocd-mip-team
-  annotations:
-    argocd.argoproj.io/sync-wave: '-1'
 spec:
   description: Monitoring resources like ECK
-  sourceRepos: [git@github.com:NeuroTech-Platform/mip-infra-staging.git]
+  sourceRepos: [https://github.com/NeuroTech-Platform/mip-infra.git]
   destinations:
     - namespace: elastic-system
       server: https://kubernetes.default.svc

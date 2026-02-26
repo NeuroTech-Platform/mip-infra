@@ -8,7 +8,7 @@
 #   --values submariner-values.yaml
 # Broker configuration - populated via --set during helm install
 broker:
-  server: example.com:6443
+  server: mip.chuv.cscs.ch:6443
   token: ''  # Populated via --set-string broker.token="$(cat broker-token.txt)" (plain text)
   ca: ''  # Populated via --set-string broker.ca="$(cat broker-ca-base64.txt)" (base64-encoded)
   namespace: submariner-k8s-broker

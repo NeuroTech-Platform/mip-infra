@@ -4,8 +4,6 @@ kind: AppProject
 metadata:
   name: mip-argo-project-common
   namespace: argocd-mip-team
-  annotations:
-    argocd.argoproj.io/sync-wave: '-1'
 spec:
   description: Common resources like monitoring, security, and datacatalog
   sourceRepos:

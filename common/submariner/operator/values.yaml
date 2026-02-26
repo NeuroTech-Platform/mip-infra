@@ -28,7 +28,7 @@ submariner:
 # set via a strategic merge patch in kustomization.yaml to reference
 # the submariner-broker-secret created by the PostSync hook
 broker:
-  server: example.com:6443
+  server: mip.chuv.cscs.ch:6443
   token: ''
   ca: ''
   namespace: submariner-k8s-broker
