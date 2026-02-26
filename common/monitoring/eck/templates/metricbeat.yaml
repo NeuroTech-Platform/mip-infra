@@ -62,6 +62,10 @@ spec:
                 readOnly: true
               - name: data
                 mountPath: /usr/share/metricbeat/data
+            {{- with .Values.observability.metricbeat.resources }}
+            resources:
+{{ toYaml . | indent 14 }}
+            {{- end }}
         volumes:
           - name: data
             emptyDir: {}
