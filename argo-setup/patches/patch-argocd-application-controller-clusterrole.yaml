@@ -111,14 +111,14 @@ rules:
       - maps.k8s.elastic.co
       - agent.k8s.elastic.co
       - autoscaling.k8s.elastic.co
-    resources: ['*']
+    resources:
+      - elasticsearches
+      - kibanas
+      - beats
+      - apmservers
+      - enterprisesearches
+      - agents
+      - agentpolicies
+      - elasticmapsservers
+      - elasticsearchautoscalings
     verbs: [create, delete, patch, update, get, list, watch]
-
-  # Rule 6: Permissions required to grant Beat RBAC safely
-  # Argo CD must hold these permissions itself before it can reconcile
-  # ClusterRoles that include them (kubectl auth reconcile escalation checks).
-  - apiGroups: [coordination.k8s.io]
-    resources: [leases]
-    verbs: [get, list, watch, create, update, delete]
-  - nonResourceURLs: [/metrics]
-    verbs: [get]
