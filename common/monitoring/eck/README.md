@@ -13,7 +13,8 @@ Optional components (disabled by default):
 
 - Helm 3 and `kubectl` available locally.
 - RKE2 cluster v1.23+ with access to the `elastic-system` namespace.
-- ECK operator 2.13+ running cluster-wide (the chart does **not** install it).
+- ECK operator 2.13+ running cluster-wide.
+  > **Note regarding the ECK Operator**: This chart does **not** install the operator because doing so requires cluster-admin privileges that shouldn't be granted to this standard monitoring deployment. If your hosting provider (like Rancher) already provides it, you are good to go. Otherwise, you must install the `common/elastic-operator` chart and its priviledged namespace manually or include it in your infrastructure overlays before deploying this monitoring stack.
 - Default StorageClass compatible with the sample workloads (defaults assume `ceph-corbo-cephfs`).
 - Namespace prepared for Beats hostPath mounts (needed only if Beats are enabled and Pod Security Admission is enforced):
 
