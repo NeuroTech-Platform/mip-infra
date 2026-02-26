@@ -228,15 +228,15 @@ This tricks your local machine into thinking `localhost` is the remote server, w
 1. **Update `/etc/hosts`**:
    ```bash
    # Add this line
-   127.0.0.1 argocd.mip-tds.chuv.cscs.ch
+   127.0.0.1 argocd.example.com
    ```
 2. **Open Tunnel (Sudo required for port 443)**:
    ```bash
-   sudo ssh -L 443:argocd.mip-tds.chuv.cscs.ch:443 <user>@<jump-host>
+   sudo ssh -L 443:argocd.example.com:443 <user>@<jump-host>
    ```
 3. **Login**:
    ```bash
-   argocd login argocd.mip-tds.chuv.cscs.ch:443 --insecure --grpc-web
+   argocd login argocd.example.com:443 --insecure --grpc-web
    ```
 
 ### Initial secrets:
