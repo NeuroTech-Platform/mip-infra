@@ -35,7 +35,7 @@ spec:
     spec:
       project: mip-argo-project-infrastructure
       source:
-        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
         targetRevision: main
         path: projects/static/{{ .fileName }}
       destination:
@@ -78,7 +78,7 @@ spec:
     spec:
       project: mip-argo-project-infrastructure
       source:
-        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
         targetRevision: main
         path: projects/templates/federation
         helm:

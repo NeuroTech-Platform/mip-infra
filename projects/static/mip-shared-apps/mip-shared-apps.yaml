@@ -7,7 +7,7 @@ metadata:
 spec:
   description: Shared applications like exareme2 and mip-stack
   sourceRepos:
-    - https://github.com/NeuroTech-Platform/mip-infra.git
+    - https://github.com/Medical-Informatics-Platform/mip-infra.git
     - https://github.com/madgik/exareme2
     - https://github.com/HBPMedical/mip-deployment
   destinations:

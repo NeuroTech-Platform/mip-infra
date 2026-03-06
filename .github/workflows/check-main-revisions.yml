@@ -48,7 +48,7 @@ jobs:
                 done
                 
                 # Only add to problems if the closest repoURL is our repo
-                if echo "$REPO_LINE" | grep -q "NeuroTech-Platform/mip-infra"; then
+                if echo "$REPO_LINE" | grep -q "Medical-Informatics-Platform/mip-infra"; then
                   TARGET_REVISION_PROBLEMS+="$LINE"$'\n'
                 fi
               done <<< "$TARGET_REVISIONS"

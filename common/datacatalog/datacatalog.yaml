@@ -13,7 +13,7 @@ spec:
       path: kubernetes
       helm:
         valueFiles: [values.yaml, $values/common/datacatalog/values.yaml]
-    - repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+    - repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
       targetRevision: main
       ref: values
   destination:

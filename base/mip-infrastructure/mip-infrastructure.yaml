@@ -29,7 +29,7 @@ spec:
     - matrix:
         generators:
           - git:
-              repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+              repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
               revision: main
               directories:
                 # Cluster-wide applications (not for use for the federations, use deployments/shared-apps instead and not declared here)
@@ -42,7 +42,7 @@ spec:
                 - cluster: https://kubernetes.default.svc
                   namespace: argocd-mip-team
                   clusterName: default
-                  repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+                  repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
   goTemplate: true  # for | lower
   template:
     metadata:
