@@ -316,7 +316,7 @@ git checkout main
 2. Add the deployment repository to Argo CD and apply the RBACs:
 
 ```bash
-argocd repo add git@github.com:NeuroTech-Platform/mip-deployments.git \
+argocd repo add git@github.com:Medical-Informatics-Platform/mip-deployments.git \
   --ssh-private-key-path ./argocd-remote-key \
   --name mip-infra
 

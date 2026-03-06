@@ -8,7 +8,7 @@ spec:
   description: Federation-specific applications and configurations
   sourceRepos:
     - https://github.com/Medical-Informatics-Platform/mip-infra.git
-    - git@github.com:NeuroTech-Platform/mip-deployments.git
+    - git@github.com:Medical-Informatics-Platform/mip-deployments.git
     - https://github.com/madgik/exareme2
     - https://github.com/HBPMedical/mip-deployment
   destinations:

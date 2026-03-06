@@ -8,7 +8,7 @@ spec:
   description: Network security policies and isolation controls for MIP infrastructure
   sourceRepos:
     - https://github.com/Medical-Informatics-Platform/mip-infra.git
-    - git@github.com:NeuroTech-Platform/mip-deployments.git
+    - git@github.com:Medical-Informatics-Platform/mip-deployments.git
   destinations:
     # Allow deployment to federation namespaces for network policies
     - namespace: federation-*

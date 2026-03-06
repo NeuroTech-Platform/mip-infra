@@ -1,6 +1,6 @@
 ## About deployments
 
-The contents of this directory have been migrated to the [mip-deployments](https://github.com/NeuroTech-Platform/mip-deployments) repository. Our deployments are private, therefore we do not commit them to this repo but we upkeep a public deployable sample here. The `shared-apps` is still in use but our `local` and `hybrid` federations reside in the other repository and might contain overridings of the `shared-apps` default configurations.
+The contents of this directory have been migrated to the [mip-deployments](https://github.com/Medical-Informatics-Platform/mip-deployments) repository. Our deployments are private, therefore we do not commit them to this repo but we upkeep a public deployable sample here. The `shared-apps` is still in use but our `local` and `hybrid` federations reside in the other repository and might contain overridings of the `shared-apps` default configurations.
 
 ### For Private Users (MIP Team)
 
@@ -14,10 +14,12 @@ However, you must run the following commands from the root directory of this rep
 cd mip-infra
 
 # Switch any private git URLs to the public repo
-sed -i 's|git@github.com:NeuroTech-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' base/mip-infrastructure/mip-infrastructure.yaml
-sed -i 's|git@github.com:NeuroTech-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' base/argo-projects.yaml
-sed -i 's|git@github.com:NeuroTech-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' deployments/shared-apps/mip-stack/mip-stack.yaml
-sed -i 's|git@github.com:NeuroTech-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' deployments/shared-apps/exareme2/exareme2.yaml
+
+sed -i 's|git@github.com:Medical-Informatics-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' base/mip-infrastructure/mip-infrastructure.yaml
+sed -i 's|git@github.com:Medical-Informatics-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' base/argo-projects.yaml
+sed -i 's|git@github.com:Medical-Informatics-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' deployments/shared-apps/mip-stack/mip-stack.yaml
+sed -i 's|git@github.com:Medical-Informatics-Platform/mip-deployments.git|https://github.com/Medical-Informatics-Platform/mip-infra.git|g' deployments/shared-apps/exareme2/exareme2.yaml
+
 sed -i '/git@github.com:NeuroTech-Platform\/mip-deployments.git/d' projects/static/mip-federations/mip-federations.yaml
 sed -i '/git@github.com:NeuroTech-Platform\/mip-deployments.git/d' projects/templates/federation/values.yaml
 
