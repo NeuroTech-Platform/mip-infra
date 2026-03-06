@@ -8,7 +8,7 @@ metadata:
 spec:
   project: mip-argo-project-federation-z
   source:
-    repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+    repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
     targetRevision: main
     path: deployments/hybrid/federations/federation-Z/mip-infrastructure/submariner-policies/
   destination:

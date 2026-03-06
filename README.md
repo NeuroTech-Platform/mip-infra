@@ -303,7 +303,7 @@ chmod +x scripts/gen_secrets.sh
 
 ```bash
 # Clone the repository 
-git clone https://github.com/NeuroTech-Platform/mip-infra.git
+git clone https://github.com/Medical-Informatics-Platform/mip-infra.git
 cd mip-infra
 
 # Checkout the desired branch (main for production, or your feature branch)
@@ -337,7 +337,7 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 SAFE_BRANCH_NAME=$(echo "$CURRENT_BRANCH" | sed 's/[^a-zA-Z0-9]/-/g')
 
 argocd app create ${SAFE_BRANCH_NAME}-argo-projects \
-  --repo https://github.com/NeuroTech-Platform/mip-infra.git \
+  --repo https://github.com/Medical-Informatics-Platform/mip-infra.git \
   --path base \
   --revision $CURRENT_BRANCH \
   --dest-server https://kubernetes.default.svc \
@@ -360,7 +360,7 @@ kubectl get appprojects -n argocd-mip-team
 
 # Create the infrastructure application using Argo CD CLI
 argocd app create ${SAFE_BRANCH_NAME}-infra-clusterset \
-  --repo https://github.com/NeuroTech-Platform/mip-infra.git \
+  --repo https://github.com/Medical-Informatics-Platform/mip-infra.git \
   --path base/mip-infrastructure \
   --revision $CURRENT_BRANCH \
   --project mip-argo-project-infrastructure \
@@ -447,7 +447,7 @@ SAFE_BRANCH_NAME=$(echo "$CURRENT_BRANCH" | sed 's/[^a-zA-Z0-9]/-/g')
 
 # Create and sync the Argo CD application for your branch
 argocd app create ${SAFE_BRANCH_NAME}-infra-clusterset \
-  --repo https://github.com/NeuroTech-Platform/mip-infra.git \
+  --repo https://github.com/Medical-Informatics-Platform/mip-infra.git \
   --path base/mip-infrastructure \
   --revision $CURRENT_BRANCH \
   --project mip-argo-project-infrastructure \

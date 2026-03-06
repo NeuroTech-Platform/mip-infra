@@ -40,7 +40,7 @@ spec:
     spec:
       project: mip-argo-project-security
       source:
-        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
         targetRevision: main
         path: common/security/federation
         helm:
@@ -93,7 +93,7 @@ spec:
     spec:
       project: mip-argo-project-security
       source:
-        repoURL: https://github.com/NeuroTech-Platform/mip-infra.git
+        repoURL: https://github.com/Medical-Informatics-Platform/mip-infra.git
         targetRevision: main
         path: common/security/common-templates
         helm:

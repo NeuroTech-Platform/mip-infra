@@ -54,7 +54,7 @@ check_file_content() {
       CONTEXT=$(echo "$FILE_CONTENT" | sed -n "${START_LINE},${END_LINE}p")
       
       # Only flag if associated with our repo
-      if echo "$CONTEXT" | grep -q "repoURL:.*NeuroTech-Platform/mip-infra"; then
+      if echo "$CONTEXT" | grep -q "repoURL:.*Medical-Informatics-Platform/mip-infra"; then
         if [[ -n "$TARGET_REVISION_ISSUES" ]]; then
           TARGET_REVISION_ISSUES+=$'\n'
         fi
@@ -147,7 +147,7 @@ if [[ "$ERROR_FOUND" -ne 0 ]]; then
   echo "Deployment command for branch '$CURRENT_BRANCH' (after ensuring files are correct):"
   SAFE_BRANCH_NAME=$(echo "$CURRENT_BRANCH" | sed 's/[^a-zA-Z0-9]/-/g')
   echo "   argocd app create ${SAFE_BRANCH_NAME}-infra-clusterset \\"
-  echo "     --repo https://github.com/NeuroTech-Platform/mip-infra.git \\"
+  echo "     --repo https://github.com/Medical-Informatics-Platform/mip-infra.git \\"
   echo "     --path base/mip-infrastructure \\"
   echo "     --revision $CURRENT_BRANCH \\"
   echo "     --dest-server https://kubernetes.default.svc \\"
