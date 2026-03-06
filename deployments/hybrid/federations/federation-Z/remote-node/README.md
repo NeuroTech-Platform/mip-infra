@@ -167,8 +167,8 @@ If you see certificate errors in the `submariner-operator` logs or `ServiceExpor
 base64 -d broker-ca-base64.txt > broker-ca.crt
 
 # 2. Verify connection to the broker API server
-# Replace mip-tds.chuv.cscs.ch:6443 with your broker address if different
-openssl s_client -connect mip-tds.chuv.cscs.ch:6443 -CAfile broker-ca.crt -showcerts < /dev/null
+# Replace example.com:6443 with your broker address if different
+openssl s_client -connect example.com:6443 -CAfile broker-ca.crt -showcerts < /dev/null
 
 # You should see "Verify return code: 0 (ok)" at the end.
 # If you see "Verify return code: 19 (self-signed certificate...)", the CA is incorrect or missing.

@@ -2,4 +2,4 @@
 log_level: DEBUG
 namespace: federation-z
 mip:
-  PUBLIC_HOST: federation-z.mip-tds.chuv.cscs.ch
+  PUBLIC_HOST: federation-z.example.com
