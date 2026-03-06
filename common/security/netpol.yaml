@@ -17,7 +17,7 @@ spec:
     - matrix:
         generators:
           - git:
-              repoURL: git@github.com:NeuroTech-Platform/mip-deployments.git
+              repoURL: git@github.com:Medical-Informatics-Platform/mip-deployments.git
               revision: main
               directories:
                 # Local federations

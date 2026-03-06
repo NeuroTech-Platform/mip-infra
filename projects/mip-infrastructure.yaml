@@ -8,7 +8,7 @@ spec:
   description: Core infrastructure components and ApplicationSets
   sourceRepos:
     - https://github.com/NeuroTech-Platform/mip-infra.git
-    - git@github.com:NeuroTech-Platform/mip-deployments.git
+    - git@github.com:Medical-Informatics-Platform/mip-deployments.git
   destinations:
     - namespace: argocd-mip-team
       server: https://kubernetes.default.svc
